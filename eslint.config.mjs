@@ -9,15 +9,17 @@ export default defineConfig([
 		plugins: { js },
 		extends: ["js/recommended"],
 		rules: {
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{
+					argsIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
+				},
+			],
 			"no-restricted-imports": [
 				"error",
 				{
 					patterns: [
-						{
-							group: ["../*"],
-							message:
-								"Relative imports are not allowed, use absolute imports instead (start with @/ to refer to src/)",
-						},
 						{
 							regex: "@discordjs/core$",
 							message:
