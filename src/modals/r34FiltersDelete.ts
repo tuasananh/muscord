@@ -4,7 +4,11 @@ import {
 	TextInputBuilder,
 } from '@discordjs/builders';
 import { Modal } from '.';
-import { InteractionResponseType, TextInputStyle } from '@discordjs/core/http-only';
+import {
+	ComponentType,
+	InteractionResponseType,
+	TextInputStyle,
+} from '@discordjs/core/http-only';
 
 export const r34FiltersDeleteModal: Modal = {
 	data: (() => {
@@ -33,11 +37,20 @@ export const r34FiltersDeleteModal: Modal = {
 			'json'
 		)) as any;
 
+		const type = interaction.data.components[0].type;
+		if (type != ComponentType.ActionRow) {
+			return c.json({
+				type: InteractionResponseType.ChannelMessageWithSource,
+				data: {
+					content: 'Invalid submission.',
+				},
+			});
+		}
+
 		const deleteList =
 			interaction.data.components[0].components[0].value.split(
 				'\n'
 			);
-
 
 		if (filters) {
 			for (const toDelete of deleteList) {
