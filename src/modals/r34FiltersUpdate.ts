@@ -8,6 +8,7 @@ import {
 	InteractionResponseType,
 	TextInputStyle,
 } from '@discordjs/core/http-only';
+import { ComponentType } from 'discord-api-types/v9';
 
 export const r34FiltersUpdateModal: Modal = {
 	data: (() => {
@@ -50,6 +51,18 @@ export const r34FiltersUpdateModal: Modal = {
 			'filters',
 			'json'
 		)) || {}) as any;
+
+
+        if (interaction.data.components[0].type != ComponentType.ActionRow ||
+            interaction.data.components[1].type != ComponentType.ActionRow ||
+            interaction.data.components[2].type != ComponentType.ActionRow) {
+            return c.json({
+                type: InteractionResponseType.ChannelMessageWithSource,
+                data: {
+                    content: 'Invalid submission.',
+                },
+            });
+        }
 
 		const key =
 			interaction.data.components[0].components[0].value;
