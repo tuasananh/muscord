@@ -1,5 +1,1 @@
-onlyBuiltDependencies:
-  - esbuild
-  - ngrok
-  - sharp
-  - workerd
+
