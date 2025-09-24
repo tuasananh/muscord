@@ -102,6 +102,8 @@ export const r34Command: Command = {
 				json: '1',
 				limit: times.toString(),
 				tags: queryTags,
+                api_key: c.env.RULE34_API_KEY,
+                user_id: c.env.RULE34_USER_ID
 			}).toString();
 
 		try {
