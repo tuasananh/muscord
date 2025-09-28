@@ -1,33 +1,33 @@
-import { createMiddleware } from 'hono/factory';
-import { HTTPException } from 'hono/http-exception';
-import E from '../types/Env';
+import { createMiddleware } from "hono/factory";
+import { HTTPException } from "hono/http-exception";
+import E from "../types/Env";
 
 function getSubtleCrypto(): SubtleCrypto {
 	// @ts-ignore
-	if (typeof window !== 'undefined' && window.crypto) {
+	if (typeof window !== "undefined" && window.crypto) {
 		// @ts-ignore
 		return window.crypto.subtle;
 	}
 	if (
-		typeof globalThis !== 'undefined' &&
+		typeof globalThis !== "undefined" &&
 		// @ts-ignore
 		globalThis.crypto
 	) {
 		// @ts-ignore
 		return globalThis.crypto.subtle;
 	}
-	if (typeof crypto !== 'undefined') {
+	if (typeof crypto !== "undefined") {
 		return crypto.subtle;
 	}
-	if (typeof require === 'function') {
+	if (typeof require === "function") {
 		// Cloudflare Workers are doing what appears to be a regex check to look and
 		// warn for this pattern. We should never get here in a Cloudflare Worker, so
 		// I am being coy to avoid detection and a warning.
-		const cryptoPackage = 'node:crypto';
+		const cryptoPackage = "node:crypto";
 		const crypto = require(cryptoPackage);
 		return crypto.webcrypto.subtle;
 	}
-	throw new Error('No Web Crypto API implementation found');
+	throw new Error("No Web Crypto API implementation found");
 }
 
 export const subtleCrypto = getSubtleCrypto();
@@ -46,11 +46,11 @@ export function valueToUint8Array(
 	if (value == null) {
 		return new Uint8Array();
 	}
-	if (typeof value === 'string') {
-		if (format === 'hex') {
+	if (typeof value === "string") {
+		if (format === "hex") {
 			const matches = value.match(/.{1,2}/g);
 			if (matches == null) {
-				throw new Error('Value is not a valid hex string');
+				throw new Error("Value is not a valid hex string");
 			}
 			const hexVal = matches.map((byte: string) =>
 				Number.parseInt(byte, 16)
@@ -74,7 +74,7 @@ export function valueToUint8Array(
 		return value;
 	}
 	throw new Error(
-		'Unrecognized value type, must be one of: string, Buffer, ArrayBuffer, Uint8Array'
+		"Unrecognized value type, must be one of: string, Buffer, ArrayBuffer, Uint8Array"
 	);
 }
 
@@ -103,29 +103,26 @@ export async function verifyKey(
 	try {
 		const timestampData = valueToUint8Array(timestamp);
 		const bodyData = valueToUint8Array(rawBody);
-		const message = concatUint8Arrays(
-			timestampData,
-			bodyData
-		);
+		const message = concatUint8Arrays(timestampData, bodyData);
 		const publicKey =
-			typeof clientPublicKey === 'string'
+			typeof clientPublicKey === "string"
 				? await subtleCrypto.importKey(
-						'raw',
-						valueToUint8Array(clientPublicKey, 'hex'),
+						"raw",
+						valueToUint8Array(clientPublicKey, "hex"),
 						{
-							name: 'ed25519',
-							namedCurve: 'ed25519',
+							name: "ed25519",
+							namedCurve: "ed25519",
 						},
 						false,
-						['verify']
+						["verify"]
 				  )
 				: clientPublicKey;
 		const isValid = await subtleCrypto.verify(
 			{
-				name: 'ed25519',
+				name: "ed25519",
 			},
 			publicKey,
-			valueToUint8Array(signature, 'hex'),
+			valueToUint8Array(signature, "hex"),
 			message
 		);
 		return isValid;
@@ -133,27 +130,20 @@ export async function verifyKey(
 		return false;
 	}
 }
-const verifyDiscordRequest = createMiddleware<E>(
-	async (c, next) => {
-		const signature = c.req.header('x-signature-ed25519');
-		const timestamp = c.req.header('x-signature-timestamp');
-		const body = await c.req.text();
-		const isValidRequest =
-			signature &&
-			timestamp &&
-			(await verifyKey(
-				body,
-				signature,
-				timestamp,
-				c.env.DISCORD_PUBLIC_KEY
-			));
-		if (!isValidRequest) {
-			throw new HTTPException(401, {
-				message: 'Bad request signature.',
-			});
-		}
-		await next();
+const verifyDiscordRequest = createMiddleware<E>(async (c, next) => {
+	const signature = c.req.header("x-signature-ed25519");
+	const timestamp = c.req.header("x-signature-timestamp");
+	const body = await c.req.text();
+	const isValidRequest =
+		signature &&
+		timestamp &&
+		(await verifyKey(body, signature, timestamp, c.env.DISCORD_PUBLIC_KEY));
+	if (!isValidRequest) {
+		throw new HTTPException(401, {
+			message: "Bad request signature.",
+		});
 	}
-);
+	await next();
+});
 
 export default verifyDiscordRequest;
