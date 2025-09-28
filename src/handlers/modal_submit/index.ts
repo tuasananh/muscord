@@ -1,5 +1,5 @@
 import { modalMap } from "@/interactions/modals";
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import {
 	APIModalSubmitInteraction,
 	InteractionResponseType,

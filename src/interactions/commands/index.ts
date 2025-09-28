@@ -1,4 +1,4 @@
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import { SlashCommandOptionsOnlyBuilder } from "@discordjs/builders";
 import { APIChatInputApplicationCommandInteraction } from "@discordjs/core/http-only";
 import { commands } from "./_generated_commands";
