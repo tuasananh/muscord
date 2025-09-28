@@ -4,6 +4,6 @@
 		"source.organizeImports": "always"
 	},
 	"eslint.validate": ["javascript", "typescript"],
-	"javascript.preferences.importModuleSpecifier": "shortest",
-	"typescript.preferences.importModuleSpecifier": "shortest"
+	"javascript.preferences.importModuleSpecifier": "non-relative",
+	"typescript.preferences.importModuleSpecifier": "non-relative"
 }
