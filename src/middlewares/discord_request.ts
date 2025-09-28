@@ -1,19 +1,16 @@
+import E from "@/types/Env";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-import E from "../types/Env";
 
 function getSubtleCrypto(): SubtleCrypto {
-	// @ts-ignore
+	// @ts-expect-error TS doesn't know about window
 	if (typeof window !== "undefined" && window.crypto) {
-		// @ts-ignore
+		// @ts-expect-error TS doesn't know about window
 		return window.crypto.subtle;
 	}
-	if (
-		typeof globalThis !== "undefined" &&
-		// @ts-ignore
-		globalThis.crypto
-	) {
-		// @ts-ignore
+	// @ts-expect-error TS doesn't know about crypto
+	if (typeof globalThis !== "undefined" && globalThis.crypto) {
+		// @ts-expect-error TS doesn't know about crypto
 		return globalThis.crypto.subtle;
 	}
 	if (typeof crypto !== "undefined") {
@@ -24,6 +21,7 @@ function getSubtleCrypto(): SubtleCrypto {
 		// warn for this pattern. We should never get here in a Cloudflare Worker, so
 		// I am being coy to avoid detection and a warning.
 		const cryptoPackage = "node:crypto";
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		const crypto = require(cryptoPackage);
 		return crypto.webcrypto.subtle;
 	}
@@ -64,6 +62,7 @@ export function valueToUint8Array(
 		if (Buffer.isBuffer(value)) {
 			return new Uint8Array(value);
 		}
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (ex) {
 		// Runtime doesn't have Buffer
 	}
@@ -126,6 +125,7 @@ export async function verifyKey(
 			message
 		);
 		return isValid;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (ex) {
 		return false;
 	}

@@ -1,10 +1,10 @@
-import MyContext from '../types/MyContext';
-import { commandMap } from '../commands';
+import { commandMap } from "@/interactions/commands";
+import MyContext from "@/types/MyContext";
 import {
 	APIChatInputApplicationCommandInteraction,
 	ApplicationCommandOptionType,
 	InteractionResponseType,
-} from '@discordjs/core/http-only';
+} from "@discordjs/core/http-only";
 
 export default async function chatInputApplicationCommandHandler(
 	c: MyContext,
@@ -14,11 +14,10 @@ export default async function chatInputApplicationCommandHandler(
 	const command = commandMap.get(name);
 
 	if (!command) {
-		return c.json({ error: 'Unknown Command' }, 400);
+		return c.json({ error: "Unknown Command" }, 400);
 	}
 
-	const invoked_user =
-		interaction.member?.user ?? interaction.user;
+	const invoked_user = interaction.member?.user ?? interaction.user;
 
 	if (
 		!invoked_user ||
@@ -28,13 +27,14 @@ export default async function chatInputApplicationCommandHandler(
 		return c.json({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: {
-				content: 'Permissions denied!',
+				content: "Permissions denied!",
 			},
 		});
 	}
 
 	const options = interaction.data.options || [];
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const inputMap = new Map<string, any>();
 
 	for (const opt of options) {
@@ -49,13 +49,8 @@ export default async function chatInputApplicationCommandHandler(
 		}
 	}
 
-
 	if (!command.defer_first) {
-		return (await command.run(
-			c,
-			interaction,
-			inputMap
-		)) as Response;
+		return (await command.run(c, interaction, inputMap)) as Response;
 	}
 
 	c.executionCtx.waitUntil(
@@ -63,7 +58,7 @@ export default async function chatInputApplicationCommandHandler(
 			while (!c.res.ok) {
 				await new Promise<void>((f) => f());
 			} // wait for the defer to be finshed
-      
+
 			await command.run(c, interaction, inputMap);
 		})()
 	);

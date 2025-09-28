@@ -1,9 +1,9 @@
-import { modalMap } from '../modals';
-import MyContext from '../types/MyContext';
+import { modalMap } from "@/interactions/modals";
+import MyContext from "@/types/MyContext";
 import {
 	APIModalSubmitInteraction,
 	InteractionResponseType,
-} from '@discordjs/core/http-only';
+} from "@discordjs/core/http-only";
 
 export default async function modalSubmitHandler(
 	c: MyContext,
@@ -12,7 +12,7 @@ export default async function modalSubmitHandler(
 	const modal = modalMap.get(interaction.data.custom_id);
 
 	if (!modal) {
-		return c.json({ error: 'Unknown Modal' }, 400);
+		return c.json({ error: "Unknown Modal" }, 400);
 	}
 
 	if (!modal.defer_first) {

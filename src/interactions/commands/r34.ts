@@ -2,65 +2,58 @@ import {
 	ActionRowBuilder,
 	ButtonBuilder,
 	SlashCommandBuilder,
-} from '@discordjs/builders';
-import { Command } from '.';
-import { ButtonStyle } from '@discordjs/core/http-only';
+} from "@discordjs/builders";
+import { ButtonStyle } from "@discordjs/core/http-only";
+import { Command } from ".";
 
-export const r34Command: Command = {
+const r34: Command = {
 	data: new SlashCommandBuilder()
-		.setName('r34')
-		.setDescription('Uh oh!')
+		.setName("r34")
+		.setDescription("Uh oh!")
 		.setNSFW(true)
 		.addIntegerOption((option) =>
 			option
-				.setName('times')
-				.setDescription(
-					'The number of posts to fetch, defaults to 15'
-				)
+				.setName("times")
+				.setDescription("The number of posts to fetch, defaults to 15")
 				.setMaxValue(100)
 				.setMinValue(1)
 		)
 		.addStringOption((option) =>
 			option
-				.setName('tags')
+				.setName("tags")
 				.setDescription(
-					'The tags to filter posts, seperated by a space'
+					"The tags to filter posts, seperated by a space"
 				)
 		)
 		.addStringOption((option) =>
 			option
-				.setName('filter')
+				.setName("filter")
 				.setDescription(
-					'List of predefined filters to apply to the tag list, seperated by a space'
+					"List of predefined filters to apply to the tag list, seperated by a space"
 				)
 		),
 
 	defer_first: true,
 	run: async (c, interaction, inputMap) => {
-		const times: number = inputMap.get('times') ?? 15;
-		const tags: string = inputMap.get('tags') ?? '';
+		const times: number = inputMap.get("times") ?? 15;
+		const tags: string = inputMap.get("tags") ?? "";
 
 		const whiteSpaceRegex = /\s+/;
 
-		const inputTagsList = Array.from(
-			new Set(tags.split(whiteSpaceRegex))
-		);
+		const inputTagsList = Array.from(new Set(tags.split(whiteSpaceRegex)));
 
 		const tagsList = [];
 
-		const filter: string = inputMap.get('filter') ?? '';
+		const filter: string = inputMap.get("filter") ?? "";
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const filters: any =
-			(await c.env.KV_STORE.get('filters', 'json')) || {};
+			(await c.env.KV_STORE.get("filters", "json")) || {};
 
-		for (const appliedFilter of filter.split(
-			whiteSpaceRegex
-		)) {
+		for (const appliedFilter of filter.split(whiteSpaceRegex)) {
 			const toAppend = filters[appliedFilter];
 			if (toAppend) {
-				for (const item of toAppend.split(
-					whiteSpaceRegex
-				)) {
+				for (const item of toAppend.split(whiteSpaceRegex)) {
 					tagsList.push(item);
 				}
 			}
@@ -72,23 +65,23 @@ export const r34Command: Command = {
 
 		const uniqueTagsList = Array.from(new Set(tagsList));
 
-		const queryTags = uniqueTagsList.join(' ');
+		const queryTags = uniqueTagsList.join(" ");
 
 		const baseUrl =
-			'https://api.rule34.xxx/index.php?page=dapi&s=post&q=index';
+			"https://api.rule34.xxx/index.php?page=dapi&s=post&q=index";
 
-		const inputTagsText = inputTagsList.join(' ').length
-			? inputTagsList.join(' ')
-			: 'None';
+		const inputTagsText = inputTagsList.join(" ").length
+			? inputTagsList.join(" ")
+			: "None";
 
 		await c
-			.get('api')
+			.get("api")
 			.interactions.followUp(
 				interaction.application_id,
 				interaction.token,
 				{
 					content: `input tags: \`${inputTagsText}\`\nraw tags:\`${
-						queryTags.length ? queryTags : 'None'
+						queryTags.length ? queryTags : "None"
 					}\`\ntimes: \`${times}\``,
 				}
 			);
@@ -96,31 +89,31 @@ export const r34Command: Command = {
 		const url =
 			baseUrl +
 			new URLSearchParams({
-				page: 'dapi',
-				s: 'post',
-				q: 'index',
-				json: '1',
+				page: "dapi",
+				s: "post",
+				q: "index",
+				json: "1",
 				limit: times.toString(),
 				tags: queryTags,
-                api_key: c.env.RULE34_API_KEY,
-                user_id: c.env.RULE34_USER_ID
+				api_key: c.env.RULE34_API_KEY,
+				user_id: c.env.RULE34_USER_ID,
 			}).toString();
 
 		try {
 			const posts = await fetch(url);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const data = (await posts.json()) as any[];
 			for (let i = 0; i < data.length; ) {
 				let cnt = 5;
-				let content = '';
+				let content = "";
 				let order = 1;
 				const row = new ActionRowBuilder<ButtonBuilder>();
-				const sendOne =
-					new ActionRowBuilder<ButtonBuilder>();
+				const sendOne = new ActionRowBuilder<ButtonBuilder>();
 				while (cnt > 0 && i < data.length) {
-					const original = `https://rule34.xxx/index.php?page=post&s=view&id=${data[i]['id']}`;
+					const original = `https://rule34.xxx/index.php?page=post&s=view&id=${data[i]["id"]}`;
 					content += `[flink${order}](`;
-					content += data[i]['file_url'];
-					content += ')';
+					content += data[i]["file_url"];
+					content += ")";
 					row.addComponents(
 						new ButtonBuilder()
 							.setURL(original)
@@ -131,7 +124,7 @@ export const r34Command: Command = {
 					sendOne.addComponents(
 						new ButtonBuilder()
 							.setStyle(ButtonStyle.Primary)
-							.setCustomId('r34-show-one@' + data[i]['id'])
+							.setCustomId("r34-show-one@" + data[i]["id"])
 							.setLabel(`${order}`)
 					);
 
@@ -139,13 +132,13 @@ export const r34Command: Command = {
 					// customId = it's like the roots
 					// we need to specify handlers for
 					cnt--;
-					if (cnt) content += '        ';
+					if (cnt) content += "        ";
 					i++;
 					order++;
 				}
 
 				await c
-					.get('api')
+					.get("api")
 					.interactions.followUp(
 						interaction.application_id,
 						interaction.token,
@@ -159,20 +152,20 @@ export const r34Command: Command = {
 		} catch (err) {
 			if (
 				err instanceof SyntaxError &&
-				err.message == 'Unexpected end of JSON input'
+				err.message == "Unexpected end of JSON input"
 			) {
 				await c
-					.get('api')
+					.get("api")
 					.interactions.followUp(
 						interaction.application_id,
 						interaction.token,
 						{
-							content: 'No posts found!',
+							content: "No posts found!",
 						}
 					);
 			} else {
 				await c
-					.get('api')
+					.get("api")
 					.interactions.followUp(
 						interaction.application_id,
 						interaction.token,
@@ -184,3 +177,5 @@ export const r34Command: Command = {
 		}
 	},
 };
+
+export default r34;
