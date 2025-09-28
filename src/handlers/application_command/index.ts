@@ -1,5 +1,5 @@
 import chatInputApplicationCommandHandler from "@/handlers/application_command/chat_input";
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import {
 	APIApplicationCommandInteraction,
 	APIChatInputApplicationCommandInteraction,

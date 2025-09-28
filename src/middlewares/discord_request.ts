@@ -1,4 +1,4 @@
-import E from "@/types/Env";
+import E from "@/types/environment";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 

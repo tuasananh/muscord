@@ -1,5 +1,5 @@
 import { buttonMap } from "@/interactions/buttons";
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import {
 	APIMessageComponentButtonInteraction,
 	APIMessageComponentInteraction,

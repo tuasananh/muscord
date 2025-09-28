@@ -1,4 +1,4 @@
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import { APIMessageComponentButtonInteraction } from "@discordjs/core/http-only";
 import r34ShowOneButton from "./r34_show_one";
 

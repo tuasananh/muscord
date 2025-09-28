@@ -1,5 +1,5 @@
 import { commandMap } from "@/interactions/commands";
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import {
 	APIChatInputApplicationCommandInteraction,
 	ApplicationCommandOptionType,

@@ -1,4 +1,4 @@
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import { ModalBuilder } from "@discordjs/builders";
 import { APIModalSubmitInteraction } from "@discordjs/core/http-only";
 import { r34FiltersDeleteModal } from "./r34FiltersDelete";

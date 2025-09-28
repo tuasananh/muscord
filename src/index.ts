@@ -11,7 +11,7 @@ import apiFromToken from "./api";
 import applicationCommandHandler from "./handlers/application_command";
 import messageComponentHandler from "./handlers/message_component";
 import modalSubmitHandler from "./handlers/modal_submit";
-import E from "./types/Env";
+import E from "./types/environment";
 
 const app = new Hono<E>();
 

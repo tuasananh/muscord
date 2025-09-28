@@ -1,4 +1,4 @@
-import MyContext from "@/types/MyContext";
+import MyContext from "@/types/my_context";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import {
 	APIInteractionResponseChannelMessageWithSource,
