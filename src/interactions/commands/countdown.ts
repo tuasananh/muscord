@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { Command } from '.';
 
-export const timerCommand: Command = {
+const countdown: Command = {
 	data: new SlashCommandBuilder()
 		.setName('countdown')
 		.setDescription('Count down seconds...')
@@ -10,9 +10,10 @@ export const timerCommand: Command = {
 				.setName('seconds')
 				.setDescription('Number of seconds to count down')
 				.setRequired(true)
-				.setMaxValue(25)
+				.setMaxValue(120)
 				.setMinValue(1)
 		),
+    defer_first: true,
 	run: async (c, interaction, inputMap) => {
 		const seconds = inputMap.get('seconds') || 10;
 
@@ -40,3 +41,5 @@ export const timerCommand: Command = {
 			);
 	},
 };
+
+export default countdown;
