@@ -1,27 +1,26 @@
 import MyContext from "@/types/my_context";
-import { APIMessageComponentButtonInteraction } from "@discordjs/core/http-only";
-import r34ShowOneButton from "./r34_show_one";
+import { APIInteractionResponse, APIMessageComponentButtonInteraction } from "@discordjs/core/http-only";
+export { buttons } from "./_generated_buttons";
 
-export interface Button {
-	/**
-	 * The name of the button.
-	 *
-	 * Should be camelCase to save space in `custom_id`.
-	 */
-	name: string;
-	run: (
-		c: MyContext,
-		interaction: APIMessageComponentButtonInteraction
-	) => Promise<void | Response>;
-	defer_first?: boolean;
-}
+type Runner<Output> = (
+    c: MyContext,
+    interaction: APIMessageComponentButtonInteraction,
+    args: string[]
+) => Promise<Output>;
 
-export const buttons: Button[] = [r34ShowOneButton];
+type BaseButton = {
+    name: string;
+    // ownerOnly?: boolean;
+};
 
-export const buttonMap = (() => {
-	const map = new Map<string, Button>();
-	for (const button of buttons) {
-		map.set(button.name, button);
-	}
-	return map;
-})();
+type DeferedButton = BaseButton & {
+    run: Runner<void>;
+    shouldDefer: true;
+};
+
+type ImmediateCommand = BaseButton & {
+    run: Runner<APIInteractionResponse>;
+    shouldDefer?: false;
+};
+
+export type Button = DeferedButton | ImmediateCommand;

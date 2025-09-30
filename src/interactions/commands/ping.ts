@@ -1,21 +1,17 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
-import { Command } from '.';
+import { InteractionResponseType } from "@discordjs/core/http-only";
+import { Command } from ".";
 
-const ping: Command = {
-	data: new SlashCommandBuilder()
-		.setName('ping')
-		.setDescription('Pong!'),
-	run: async (c, interaction) => {
-		await c
-			.get('api')
-			.interactions.reply(
-				interaction.application_id,
-				interaction.token,
-				{
-					content: 'Pong!',
-				}
-			);
-	},
+const pingCommand: Command = {
+    data: (command) =>
+        command.setName("ping").setDescription("Replies with Pong!"),
+    run: async () => {
+        return {
+            type: InteractionResponseType.ChannelMessageWithSource,
+            data: {
+                content: "Pong!",
+            },
+        };
+    },
 };
 
-export default ping;
+export default pingCommand;

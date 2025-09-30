@@ -1,23 +1,35 @@
 import MyContext from "@/types/my_context";
-import { SlashCommandOptionsOnlyBuilder } from "@discordjs/builders";
-import { APIChatInputApplicationCommandInteraction } from "@discordjs/core/http-only";
-import { commands } from "./_generated_commands";
+import {
+    SlashCommandBuilder,
+    SlashCommandOptionsOnlyBuilder,
+} from "@discordjs/builders";
+import {
+    APIChatInputApplicationCommandInteraction,
+    APIInteractionResponse,
+} from "@discordjs/core/http-only";
 export { commands } from "./_generated_commands";
 
-export interface Command {
-	data: SlashCommandOptionsOnlyBuilder;
-	run: (
-		c: MyContext,
-		interaction: APIChatInputApplicationCommandInteraction,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		inputMap: Map<string, any>
-	) => Promise<void | Response>;
-	owner_only?: boolean;
-	defer_first?: boolean;
-}
+type Runner<Args extends Record<string, unknown>, Output> = (
+    c: MyContext,
+    interaction: APIChatInputApplicationCommandInteraction,
+    args: Args
+) => Promise<Output>;
 
-export const commandMap = new Map<string, Command>();
+type BaseCommand = {
+    data: (c: SlashCommandBuilder) => SlashCommandOptionsOnlyBuilder;
+    ownerOnly?: boolean;
+};
 
-for (const command of commands) {
-	commandMap.set(command.data.name, command);
-}
+type DeferedCommand<Args extends Record<string, unknown>> = BaseCommand & {
+    run: Runner<Args, void>;
+    shouldDefer: true;
+};
+
+type ImmediateCommand<Args extends Record<string, unknown>> = BaseCommand & {
+    run: Runner<Args, APIInteractionResponse>;
+    shouldDefer?: false;
+};
+
+export type Command<Args extends Record<string, unknown> = Record<string, unknown>> =
+    | DeferedCommand<Args>
+    | ImmediateCommand<Args>;

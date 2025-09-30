@@ -1,25 +1,26 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
-import { Command } from '.';
+import { Command } from "@/interactions/commands";
 
-const countdown: Command = {
-	data: new SlashCommandBuilder()
-		.setName('countdown')
-		.setDescription('Count down seconds...')
-		.addIntegerOption((option) =>
-			option
-				.setName('seconds')
-				.setDescription('Number of seconds to count down')
-				.setRequired(true)
-				.setMaxValue(120)
-				.setMinValue(1)
-		),
-    defer_first: true,
+const countdownCommand: Command<{
+	seconds: bigint;
+}> = {
+	data: (data) =>
+		data
+			.setName("countdown")
+			.setDescription("Starts a countdown")
+			.addIntegerOption((option) =>
+				option
+					.setName("seconds")
+					.setDescription("Number of seconds")
+					.setMinValue(1)
+					.setMaxValue(120)
+			),
+	shouldDefer: true,
 	run: async (c, interaction, inputMap) => {
-		const seconds = inputMap.get('seconds') || 10;
+		const { seconds } = inputMap;
 
 		for (let i = seconds; i >= 1; i--) {
 			await c
-				.get('api')
+				.get("api")
 				.interactions.editReply(
 					interaction.application_id,
 					interaction.token,
@@ -31,7 +32,7 @@ const countdown: Command = {
 		}
 
 		await c
-			.get('api')
+			.get("api")
 			.interactions.editReply(
 				interaction.application_id,
 				interaction.token,
@@ -42,4 +43,4 @@ const countdown: Command = {
 	},
 };
 
-export default countdown;
+export default countdownCommand;
