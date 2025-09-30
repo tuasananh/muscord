@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"codegen": "ts-node src/scripts/build.ts",
+		"codegen": "ts-node src/scripts/codegen.ts",
+        "build": "pnpm register",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
