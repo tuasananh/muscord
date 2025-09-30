@@ -1,46 +1,28 @@
 import { Hono } from "hono";
 import verifyDiscordRequest from "./middlewares/discord_request";
 
-import {
-	APIInteraction,
-	InteractionResponseType,
-	InteractionType,
-} from "@discordjs/core/http-only";
 import apiFromToken from "./api";
 
-import applicationCommandHandler from "./handlers/application_command";
-import messageComponentHandler from "./handlers/message_component";
-import modalSubmitHandler from "./handlers/modal_submit";
+import interactionHandler from "@/handlers";
 import E from "./types/environment";
 import * as Rule34Api from "./utils/rule34/api";
 
 const app = new Hono<E>();
 
 app.use(async (c, next) => {
-	c.set("api", apiFromToken(c.env.DISCORD_TOKEN));
-	c.set("r34", Rule34Api);
-	await next();
+    c.set("api", apiFromToken(c.env.DISCORD_TOKEN));
+    c.set("r34", Rule34Api);
+    await next();
 });
 
-app.post("/", verifyDiscordRequest, async (c) => {
-	const interaction: APIInteraction = await c.req.json();
-
-	if (interaction.type == InteractionType.Ping) {
-		return c.json({
-			type: InteractionResponseType.Pong,
-		});
-	}
-
-	switch (interaction.type) {
-		case InteractionType.ApplicationCommand:
-			return await applicationCommandHandler(c, interaction);
-		case InteractionType.ModalSubmit:
-			return await modalSubmitHandler(c, interaction);
-		case InteractionType.MessageComponent:
-			return await messageComponentHandler(c, interaction);
-		default:
-			return c.json({ error: "Unknown Interaction Type" }, 400);
-	}
+app.get("/", async (c) => {
+    const { results } = await c.env.prod_muscord
+        .prepare("SELECT * from r34_presets WHERE name LIKE ? || '%'")
+        .bind("")
+        .run();
+    return c.json({ presets: results });
 });
+
+app.post("/", verifyDiscordRequest, interactionHandler);
 
 export default app;
