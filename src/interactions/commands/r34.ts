@@ -1,74 +1,70 @@
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	SlashCommandBuilder,
-} from "@discordjs/builders";
+import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { ButtonStyle } from "@discordjs/core/http-only";
 import { Command } from ".";
 
-const r34: Command = {
-	data: new SlashCommandBuilder()
-		.setName("r34")
-		.setDescription("Uh oh!")
-		.setNSFW(true)
-		.addIntegerOption((option) =>
-			option
-				.setName("times")
-				.setDescription("The number of posts to fetch, defaults to 15")
-				.setMaxValue(100)
-				.setMinValue(1)
-		)
-		.addStringOption((option) =>
-			option
-				.setName("tags")
-				.setDescription(
-					"The tags to filter posts, seperated by a space"
-				)
-		)
-		.addStringOption((option) =>
-			option
-				.setName("filter")
-				.setDescription(
-					"List of predefined filters to apply to the tag list, seperated by a space"
-				)
-		),
+const r34: Command<{
+	tags?: string;
+	limit?: number;
+	presets?: string;
+}> = {
+	data: (c) =>
+		c
+			.setName("r34")
+			.setDescription("Uh oh!")
+			.setNSFW(true)
+			.addStringOption((option) =>
+				option
+					.setName("tags")
+					.setDescription(
+						"The tags to filter posts, seperated by a space"
+					)
+			)
+			.addIntegerOption((option) =>
+				option
+					.setName("limit")
+					.setDescription(
+						"The maximum number of posts to fetch, defaults to 15"
+					)
+					.setMaxValue(100)
+					.setMinValue(1)
+			)
+			.addStringOption((option) =>
+				option
+					.setName("presets")
+					.setDescription(
+						"List of tag presets to apply to the tag list, seperated by a space"
+					)
+			),
 
-	defer_first: true,
+	shouldDefer: true,
 	run: async (c, interaction, inputMap) => {
-		const times: number = inputMap.get("times") ?? 15;
-		const tags: string = inputMap.get("tags") ?? "";
+		let { tags, limit } = inputMap;
 
-		const whiteSpaceRegex = /\s+/;
+		tags = tags ?? "";
+		limit = limit ?? 15;
 
-		const inputTagsList = Array.from(new Set(tags.split(whiteSpaceRegex)));
+		const inputTagsList = Array.from(new Set(tags.split(/\s+/)));
 
-		const tagsList = [];
+		const tagsList = new Set();
 
-		const filter: string = inputMap.get("filter") ?? "";
+		// // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// const filters: any =
+		// 	(await c.env.KV_STORE.get("filters", "json")) || {};
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const filters: any =
-			(await c.env.KV_STORE.get("filters", "json")) || {};
-
-		for (const appliedFilter of filter.split(whiteSpaceRegex)) {
-			const toAppend = filters[appliedFilter];
-			if (toAppend) {
-				for (const item of toAppend.split(whiteSpaceRegex)) {
-					tagsList.push(item);
-				}
-			}
-		}
+		// for (const appliedFilter of filter.split(whiteSpaceRegex)) {
+		// 	const toAppend = filters[appliedFilter];
+		// 	if (toAppend) {
+		// 		for (const item of toAppend.split(whiteSpaceRegex)) {
+		// 			tagsList.push(item);
+		// 		}
+		// 	}
+		// }
 
 		for (const item of inputTagsList) {
-			tagsList.push(item);
+			tagsList.add(item);
 		}
 
-		const uniqueTagsList = Array.from(new Set(tagsList));
-
-		const queryTags = uniqueTagsList.join(" ");
-
-		const baseUrl =
-			"https://api.rule34.xxx/index.php?page=dapi&s=post&q=index";
+		const queryTags = Array.from(tagsList).join(" ");
 
 		const inputTagsText = inputTagsList.join(" ").length
 			? inputTagsList.join(" ")
@@ -82,29 +78,15 @@ const r34: Command = {
 				{
 					content: `input tags: \`${inputTagsText}\`\nraw tags:\`${
 						queryTags.length ? queryTags : "None"
-					}\`\ntimes: \`${times}\``,
+					}\`\ntimes: \`${limit}\``,
 				}
 			);
 
-		const url =
-			baseUrl +
-			new URLSearchParams({
-				page: "dapi",
-				s: "post",
-				q: "index",
-				json: "1",
-				limit: times.toString(),
-				tags: queryTags,
-				api_key: c.env.RULE34_API_KEY,
-				user_id: c.env.RULE34_USER_ID,
-			}).toString();
-
 		try {
-			const posts = await fetch(url);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const data = (await posts.json()) as any[];
+			const data = await c.get("r34").fetchPosts(c, queryTags, limit);
+			const NUMBER_OF_POSTS_PER_MESSAGE = 5;
 			for (let i = 0; i < data.length; ) {
-				let cnt = 5;
+				let cnt = NUMBER_OF_POSTS_PER_MESSAGE;
 				let content = "";
 				let order = 1;
 				const row = new ActionRowBuilder<ButtonBuilder>();
@@ -124,7 +106,7 @@ const r34: Command = {
 					sendOne.addComponents(
 						new ButtonBuilder()
 							.setStyle(ButtonStyle.Primary)
-							.setCustomId("r34-show-one@" + data[i]["id"])
+							.setCustomId("r34ShowOne@" + data[i]["id"])
 							.setLabel(`${order}`)
 					);
 

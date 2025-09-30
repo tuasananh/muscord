@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 config({ path: ".dev.vars" });
 
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Routes } from "@discordjs/core/http-only";
 import { REST } from "@discordjs/rest";
 import { commands } from "./interactions/commands";
@@ -11,39 +12,44 @@ import { commands } from "./interactions/commands";
  */
 
 async function registerCommands(guildId: string = "") {
-	const token = process.env.DISCORD_TOKEN;
-	const applicationId = process.env.DISCORD_APPLICATION_ID;
+    const token = process.env.DISCORD_TOKEN;
+    const applicationId = process.env.DISCORD_APPLICATION_ID;
 
-	if (!token) {
-		throw new Error("The DISCORD_TOKEN environment variable is required.");
-	}
-	if (!applicationId) {
-		throw new Error(
-			"The DISCORD_APPLICATION_ID environment variable is required."
-		);
-	}
+    if (!token) {
+        throw new Error("The DISCORD_TOKEN environment variable is required.");
+    }
+    if (!applicationId) {
+        throw new Error(
+            "The DISCORD_APPLICATION_ID environment variable is required."
+        );
+    }
 
-	const rest = new REST().setToken(token);
+    const rest = new REST().setToken(token);
 
-	try {
-		console.log(
-			`Started refreshing ${commands.length} application (/) commands.`
-		);
+    try {
+        console.log(
+            `Started refreshing ${Object.keys(commands).length
+            } application (/) commands.`
+        );
 
-		// The put method is used to fully refresh all commands in the guild with the current set
-		const route =
-			guildId.length != 0
-				? Routes.applicationGuildCommands(applicationId, guildId)
-				: Routes.applicationCommands(applicationId);
-		const data = await rest.put(route, {
-			body: commands.map((command) => command.data.toJSON()),
-		});
-		console.log(`Successfully reloaded application (/) commands.`);
-		console.log(data);
-	} catch (error) {
-		// And of course, make sure you catch and log any errors!
-		console.error(error);
-	}
+        // The put method is used to fully refresh all commands in the guild with the current set
+        const route =
+            guildId.length != 0
+                ? Routes.applicationGuildCommands(applicationId, guildId)
+                : Routes.applicationCommands(applicationId);
+        const data = await rest.put(route, {
+            body: Object.keys(commands).map((key) =>
+                commands[key as keyof typeof commands]
+                    .data(new SlashCommandBuilder())
+                    .toJSON()
+            ),
+        });
+        console.log(`Successfully reloaded application (/) commands.`);
+        console.log(data);
+    } catch (error) {
+        // And of course, make sure you catch and log any errors!
+        console.error(error);
+    }
 }
 
 registerCommands(process.env.DISCORD_GUILD_ID);

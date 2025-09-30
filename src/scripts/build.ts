@@ -1,3 +1,4 @@
-import { generateCommands } from "./gen_commands";
+import { generate } from "./generator";
 
-generateCommands();
+generate('commands');
+generate('buttons');

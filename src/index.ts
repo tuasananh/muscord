@@ -12,11 +12,13 @@ import applicationCommandHandler from "./handlers/application_command";
 import messageComponentHandler from "./handlers/message_component";
 import modalSubmitHandler from "./handlers/modal_submit";
 import E from "./types/environment";
+import * as Rule34Api from "./utils/rule34/api";
 
 const app = new Hono<E>();
 
 app.use(async (c, next) => {
 	c.set("api", apiFromToken(c.env.DISCORD_TOKEN));
+	c.set("r34", Rule34Api);
 	await next();
 });
 

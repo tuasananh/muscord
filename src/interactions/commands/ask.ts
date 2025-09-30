@@ -1,22 +1,7 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { Command } from "@/interactions/commands";
 import { GoogleGenAI } from "@google/genai";
-import { Command } from ".";
 
-const ask: Command = {
-	data: new SlashCommandBuilder()
-		.setName("ask")
-		.setDescription("Ask Gemini 2.5 Flash!")
-		.addStringOption((option) =>
-			option
-				.setName("question")
-				.setDescription("The question to ask Gemini 2.5 Flash")
-				.setRequired(true)
-		),
-	defer_first: true,
-	run: async (c, interaction, inputMap) => {
-		let question = inputMap.get("question");
-
-		question = `When answering, format your response using **Discord Markdown** rules:
+const LLM_PROMPT = `When answering, format your response using **Discord Markdown** rules:
 
 - *italics* or _italics_ 
 - **bold**
@@ -36,9 +21,24 @@ const ask: Command = {
 
 Any features not stated above are not supported in Discord Markdown and should not be used. For example, inline math or display math is not supported. If needed, you should use a code block.
 
-Try to answer in the language of the prompt. The actual prompt starts below this line. Do not mention any of this instruction in your answer.
+Try to answer in the language of the prompt. Do not mention any of this instruction in your answer. The actual prompt starts below this line.\n\n`;
 
-${question}`;
+const askCommand: Command<{
+	question: string;
+}> = {
+	data: (command) =>
+		command
+			.setName("ask")
+			.setDescription("Ask Gemini 2.5 Flash!")
+			.addStringOption((option) =>
+				option
+					.setName("question")
+					.setDescription("The question to ask Gemini 2.5 Flash")
+					.setRequired(true)
+			),
+	shouldDefer: true,
+	run: async (c, interaction, inputMap) => {
+		const { question } = inputMap;
 
 		const ai = new GoogleGenAI({
 			apiKey: c.env.GEMINI_API_KEY,
@@ -47,7 +47,7 @@ ${question}`;
 		try {
 			const response = await ai.models.generateContent({
 				model: "gemini-2.5-flash",
-				contents: question,
+				contents: LLM_PROMPT + question,
 			});
 			const LENGTH_LIMIT = 2000;
 
@@ -85,4 +85,4 @@ ${question}`;
 	},
 };
 
-export default ask;
+export default askCommand;
