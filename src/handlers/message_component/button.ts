@@ -1,54 +1,38 @@
 import { Button, buttons } from "@/interactions/buttons";
-import MyContext from "@/types/my_context";
-import {
-    APIMessageComponentButtonInteraction,
-    InteractionResponseType,
-} from "@discordjs/core/http-only";
+import MessageComponentButtonInteraction from "@/structures/message_component_button_interaction";
 
 export default async function messageComponentButtonHandler(
-    c: MyContext,
-    interaction: APIMessageComponentButtonInteraction
+    interaction: MessageComponentButtonInteraction
 ) {
-
-    const splitted = interaction.data.custom_id.split("@");
+    const splitted = interaction.custom_id.split("@");
 
     const name = splitted.at(0);
 
-
     if (!name) {
-        return c.json({ error: "No button_id provided" }, 400);
+        return interaction.badRequest();
     }
 
-    const inputs = interaction.data.custom_id.split("@").slice(1);
+    const inputs = splitted.slice(1);
 
     if (!Object.prototype.hasOwnProperty.call(buttons, name)) {
-        return c.json({ error: "Unknown Command" }, 400);
+        return interaction.badRequest();
     }
 
     const button = buttons[name as keyof typeof buttons] as unknown as Button;
 
     if (!button.shouldDefer) {
-        return c.json(await button.run(
-            c,
-            interaction as APIMessageComponentButtonInteraction,
-            (inputs)
-        ));
+        return await button.run(interaction, inputs);
     }
 
-    c.executionCtx.waitUntil(
+    interaction.ctx.executionCtx.waitUntil(
         (async () => {
-            while (!c.res.ok) {
+            while (!interaction.ctx.res.ok) {
                 await new Promise<void>((f) => f());
             } // wait for the defer to be finshed
 
-            await button.run(
-                c,
-                interaction as APIMessageComponentButtonInteraction,
-                inputs
-            );
+            await button.run(interaction, inputs);
         })()
     );
-    return c.json({
-        type: InteractionResponseType.DeferredChannelMessageWithSource,
-    });
+
+    return interaction.jsonDefer();
 }

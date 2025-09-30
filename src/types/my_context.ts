@@ -1,7 +1,4 @@
+import { E } from "@/types/environment";
 import { Context } from "hono";
-import E from "./environment";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
-type MyContext = Context<E, any, {}>;
-
-export default MyContext;
+export type MyContext = Context<E>;

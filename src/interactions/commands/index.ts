@@ -1,17 +1,13 @@
-import MyContext from "@/types/my_context";
+import ChatInputApplicationCommandInteraction from "@/structures/chat_input_command_interaction";
+import { APIInteractionJsonResponse } from "@/types";
 import {
     SlashCommandBuilder,
     SlashCommandOptionsOnlyBuilder,
 } from "@discordjs/builders";
-import {
-    APIChatInputApplicationCommandInteraction,
-    APIInteractionResponse,
-} from "@discordjs/core/http-only";
 export { commands } from "./_generated_commands";
 
 type Runner<Args extends Record<string, unknown>, Output> = (
-    c: MyContext,
-    interaction: APIChatInputApplicationCommandInteraction,
+    interaction: ChatInputApplicationCommandInteraction,
     args: Args
 ) => Promise<Output>;
 
@@ -26,10 +22,10 @@ type DeferedCommand<Args extends Record<string, unknown>> = BaseCommand & {
 };
 
 type ImmediateCommand<Args extends Record<string, unknown>> = BaseCommand & {
-    run: Runner<Args, APIInteractionResponse>;
+    run: Runner<Args, APIInteractionJsonResponse>;
     shouldDefer?: false;
 };
 
-export type Command<Args extends Record<string, unknown> = Record<string, unknown>> =
-    | DeferedCommand<Args>
-    | ImmediateCommand<Args>;
+export type Command<
+    Args extends Record<string, unknown> = Record<string, unknown>
+> = DeferedCommand<Args> | ImmediateCommand<Args>;

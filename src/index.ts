@@ -1,17 +1,19 @@
 import { Hono } from "hono";
 import verifyDiscordRequest from "./middlewares/discord_request";
 
-import apiFromToken from "./api";
+import { makeDiscordApi, Rule34Client } from "@/apis";
 
 import interactionHandler from "@/handlers";
-import E from "./types/environment";
-import * as Rule34Api from "./utils/rule34/api";
+import { E } from "./types";
 
 const app = new Hono<E>();
 
 app.use(async (c, next) => {
-    c.set("api", apiFromToken(c.env.DISCORD_TOKEN));
-    c.set("r34", Rule34Api);
+    const apis = {
+        discord: makeDiscordApi(c.env.DISCORD_TOKEN),
+        rule34: new Rule34Client(c.env.RULE34_API_KEY, c.env.RULE34_USER_ID),
+    };
+    c.set("apis", apis);
     await next();
 });
 
