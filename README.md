@@ -4,62 +4,66 @@ A Discord bot built with TypeScript and Cloudflare Workers, featuring various ut
 
 ## Features
 
-- **Ping Command**: Basic connectivity test
-- **Dictionary Command**: Word definition lookup
-- **Timer Command**: Countdown functionality
-- **Rule34 Integration**: Content filtering and display commands
-- **Interactive Modals**: Custom forms and user input handling
-- **Button Components**: Interactive message components
+-   **Ping Command**: Basic connectivity test
+-   **Dictionary Command**: Word definition lookup
+-   **Timer Command**: Countdown functionality
+-   **Rule34 Integration**: Content filtering and display commands
+-   **Interactive Modals**: Custom forms and user input handling
+-   **Button Components**: Interactive message components
 
 ## Tech Stack
 
-- **Runtime**: [Cloudflare Workers](https://workers.cloudflare.com/)
-- **Framework**: [Hono](https://hono.dev/) - Fast web framework for edge computing
-- **Discord API**: [@discordjs/core](https://github.com/discordjs/discord.js) and [@discordjs/rest](https://github.com/discordjs/discord.js)
-- **Language**: TypeScript
-- **Package Manager**: pnpm
-- **Testing**: Vitest with Cloudflare Workers pool
+-   **Runtime**: [Cloudflare Workers](https://workers.cloudflare.com/)
+-   **Framework**: [Hono](https://hono.dev/) - Fast web framework for edge computing
+-   **Discord API**: [@discordjs/core](https://github.com/discordjs/discord.js) and [@discordjs/rest](https://github.com/discordjs/discord.js)
+-   **Language**: TypeScript
+-   **Package Manager**: pnpm
+-   **Testing**: Vitest with Cloudflare Workers pool
 
 ## Commands
 
-| Command | Description | Options |
-|---------|-------------|---------|
-| `/ping` | Responds with "Pong!" | None |
-| `/dict <word>` | Finds definitions of a word | `word` - The word to define |
-| `/timer <seconds>` | Countdown timer | `seconds` - Number of seconds to count down |
-| `/r34-filters` | Manage rule34 content filters | `action` - Action to perform |
-| `/r34` | Rule34 content search | Various search parameters |
-| `/r34-show-one` | Display single rule34 result | Search parameters |
+| Command            | Description                   | Options                                     |
+| ------------------ | ----------------------------- | ------------------------------------------- |
+| `/ping`            | Responds with "Pong!"         | None                                        |
+| `/dict <word>`     | Finds definitions of a word   | `word` - The word to define                 |
+| `/timer <seconds>` | Countdown timer               | `seconds` - Number of seconds to count down |
+| `/r34-filters`     | Manage rule34 content filters | `action` - Action to perform                |
+| `/r34`             | Rule34 content search         | Various search parameters                   |
+| `/r34-show-one`    | Display single rule34 result  | Search parameters                           |
 
 ## Setup
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm
-- Cloudflare account
-- Discord application
+-   Node.js 18+
+-   pnpm
+-   Cloudflare account
+-   Discord application
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/tuasananh/muscord.git
 cd muscord
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 # Copy example environment file
 cp example.dev.vars .dev.vars
 ```
 
 4. Configure your `.dev.vars` file with:
+
 ```
 DISCORD_TOKEN=your_bot_token_here
 DISCORD_APPLICATION_ID=your_application_id_here
@@ -76,6 +80,7 @@ DISCORD_APPLICATION_OWNER_ID=your_user_id_here
 ### Development
 
 Start the development server:
+
 ```bash
 pnpm dev
 # or
@@ -87,6 +92,7 @@ The bot will be available at `http://localhost:8787`
 ### Deployment
 
 Deploy to Cloudflare Workers:
+
 ```bash
 pnpm deploy
 ```
@@ -96,17 +102,18 @@ pnpm deploy
 ### Wrangler Configuration
 
 The bot is configured via `wrangler.toml`:
-- **Runtime**: Cloudflare Workers with Node.js compatibility
-- **Entry Point**: `src/index.ts`
-- **Environment Variables**: Defined in `[vars]` section
+
+-   **Runtime**: Cloudflare Workers with Node.js compatibility
+-   **Entry Point**: `src/index.ts`
+-   **Environment Variables**: Defined in `[vars]` section
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DISCORD_TOKEN` | Discord bot token | Yes |
-| `DISCORD_APPLICATION_ID` | Discord application ID | Yes |
-| `DISCORD_APPLICATION_OWNER_ID` | Owner user ID for admin commands | Yes |
+| Variable                       | Description                      | Required |
+| ------------------------------ | -------------------------------- | -------- |
+| `DISCORD_TOKEN`                | Discord bot token                | Yes      |
+| `DISCORD_APPLICATION_ID`       | Discord application ID           | Yes      |
+| `DISCORD_APPLICATION_OWNER_ID` | Owner user ID for admin commands | Yes      |
 
 ## Development Commands
 
@@ -168,6 +175,7 @@ The bot uses a modular architecture:
 ## Testing
 
 Run the test suite:
+
 ```bash
 pnpm test
 ```
