@@ -1,23 +1,23 @@
-import MyContext from "@/types/my_context";
+import { MyContext } from "@/types";
 import { ModalBuilder } from "@discordjs/builders";
 import { APIModalSubmitInteraction } from "@discordjs/core/http-only";
 import { r34FiltersDeleteModal } from "./r34FiltersDelete";
 import { r34FiltersUpdateModal } from "./r34FiltersUpdate";
 
 export interface Modal {
-	data: ModalBuilder;
-	run: (
-		c: MyContext,
-		interaction: APIModalSubmitInteraction
-	) => Promise<void | Response>;
-	defer_first?: boolean;
+    data: ModalBuilder;
+    run: (
+        c: MyContext,
+        interaction: APIModalSubmitInteraction
+    ) => Promise<void | Response>;
+    defer_first?: boolean;
 }
 export const modals: Modal[] = [r34FiltersDeleteModal, r34FiltersUpdateModal];
 
 export const modalMap = new Map<string, Modal>();
 
 for (const modal of modals) {
-	if (modal.data.data.custom_id) {
-		modalMap.set(modal.data.data.custom_id, modal);
-	}
+    if (modal.data.data.custom_id) {
+        modalMap.set(modal.data.data.custom_id, modal);
+    }
 }

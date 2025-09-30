@@ -1,70 +1,87 @@
 import { Command, commands } from "@/interactions/commands";
-import MyContext from "@/types/my_context";
-import {
-    APIChatInputApplicationCommandInteraction,
-    ApplicationCommandOptionType,
-    InteractionResponseType,
-} from "@discordjs/core/http-only";
+import ChatInputApplicationCommandInteraction from "@/structures/chat_input_command_interaction";
+import { snakeToCamel } from "@/utils";
+import { ApplicationCommandOptionType } from "@discordjs/core/http-only";
 
 export default async function chatInputApplicationCommandHandler(
-    c: MyContext,
-    interaction: APIChatInputApplicationCommandInteraction
+    interaction: ChatInputApplicationCommandInteraction
 ) {
-    const name = interaction.data.name.toLowerCase();
+    const name = snakeToCamel(interaction.commandName);
 
     if (!Object.prototype.hasOwnProperty.call(commands, name)) {
-        return c.json({ error: "Unknown Command" }, 400);
+        return interaction.badRequest();
     }
 
-    const command = commands[name as keyof typeof commands] as unknown as Command;
+    const command = commands[
+        name as keyof typeof commands
+    ] as unknown as Command;
 
-    const invoked_user = interaction.member?.user ?? interaction.user;
+    const invoked_user = interaction.user;
 
     if (
         !invoked_user ||
         (command.ownerOnly &&
-            invoked_user.id != c.env.DISCORD_APPLICATION_OWNER_ID)
+            invoked_user.id != interaction.env.DISCORD_APPLICATION_OWNER_ID)
     ) {
-        return c.json({
-            type: InteractionResponseType.ChannelMessageWithSource,
-            data: {
-                content: "Permissions denied!",
-            },
-        });
+        return interaction.jsonReply("Permissions denied.");
     }
-
-    const options = interaction.data.options || [];
 
     const inputMap: Record<string, unknown> = {};
 
-    for (const opt of options) {
+    for (const opt of interaction.options) {
         switch (opt.type) {
             case ApplicationCommandOptionType.Subcommand:
             case ApplicationCommandOptionType.SubcommandGroup:
                 // we will never do this
                 break;
-            default:
+            case ApplicationCommandOptionType.Boolean:
+                inputMap[opt.name] = Boolean(opt.value);
+                break;
+            case ApplicationCommandOptionType.Integer:
+                inputMap[opt.name] = Number(opt.value);
+                break;
+            case ApplicationCommandOptionType.Number:
+                inputMap[opt.name] = Number(opt.value);
+                break;
+            case ApplicationCommandOptionType.String:
+                inputMap[opt.name] = String(opt.value);
+                break;
+            case ApplicationCommandOptionType.User:
+                console.log("User", opt.value);
+                inputMap[opt.name] = opt.value;
+                break;
+            case ApplicationCommandOptionType.Channel:
+                console.log("Channel", opt.value);
+                inputMap[opt.name] = opt.value;
+                break;
+            case ApplicationCommandOptionType.Role:
+                console.log("Role", opt.value);
+                inputMap[opt.name] = opt.value;
+                break;
+            case ApplicationCommandOptionType.Mentionable:
+                console.log("Mentionable", opt.value);
+                inputMap[opt.name] = opt.value;
+                break;
+            case ApplicationCommandOptionType.Attachment:
+                console.log("Attachment", opt.value);
                 inputMap[opt.name] = opt.value;
                 break;
         }
     }
 
     if (!command.shouldDefer) {
-        return c.json(await command.run(c, interaction, inputMap));
+        return await command.run(interaction, inputMap);
     }
 
-    c.executionCtx.waitUntil(
+    interaction.ctx.executionCtx.waitUntil(
         (async () => {
-            while (!c.res.ok) {
+            while (!interaction.ctx.res.ok) {
                 await new Promise<void>((f) => f());
             } // wait for the defer to be finshed
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await command.run(c, interaction, inputMap as any);
+            await command.run(interaction, inputMap);
         })()
     );
 
-    return c.json({
-        type: InteractionResponseType.DeferredChannelMessageWithSource,
-    });
+    return interaction.jsonDefer();
 }

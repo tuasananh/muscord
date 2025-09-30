@@ -1,4 +1,3 @@
-import { InteractionResponseType } from "@discordjs/core/http-only";
 import { Command } from ".";
 
 const r34ShowOne: Command<{
@@ -8,7 +7,7 @@ const r34ShowOne: Command<{
 }> = {
     data: (c) =>
         c
-            .setName("r34-show-one")
+            .setName("r34_show_one")
             .setDescription("Uh oh!")
             .setNSFW(true)
             .addStringOption((option) =>
@@ -37,7 +36,7 @@ const r34ShowOne: Command<{
                     })
             ),
 
-    run: async (c, interaction, inputMap) => {
+    run: async (interaction, inputMap) => {
         const id = inputMap.id;
         const tags = inputMap.tags;
 
@@ -45,11 +44,13 @@ const r34ShowOne: Command<{
             let post;
 
             if (id) {
-                post = await c.get("r34").fetchPostById(c, id);
+                post = await interaction.apis.rule34.fetchPostById(id);
             } else if (tags) {
                 const whiteSpaceRegex = /\s+/;
 
-                const inputTagsList = Array.from(new Set(tags.split(whiteSpaceRegex)));
+                const inputTagsList = Array.from(
+                    new Set(tags.split(whiteSpaceRegex))
+                );
 
                 const tagsList = new Set<string>();
                 tagsList.add("sort:random");
@@ -77,36 +78,28 @@ const r34ShowOne: Command<{
 
                 const queryTags = uniqueTagsList.join(" ");
 
-                const posts = await c.get("r34").fetchPosts(c, queryTags, 1);
+                const posts = await interaction.apis.rule34.fetchPosts(
+                    queryTags,
+                    1
+                );
                 post = posts.length > 0 ? posts[0] : null;
             } else {
-                return {
-                    type: InteractionResponseType.ChannelMessageWithSource,
-                    data: {
-                        content: "Either id or tags must be provided",
-                    },
-                }
+                return interaction.jsonReply(
+                    "Either id or tags must be provided"
+                );
             }
 
-            return c.get('r34').makeOneR34PostResponse(c, post);
+            return interaction.jsonReply(
+                interaction.apis.rule34.makeSinglePostResponse(post)
+            );
         } catch (err) {
             if (
                 err instanceof SyntaxError &&
                 err.message == "Unexpected end of JSON input"
             ) {
-                return {
-                    type: InteractionResponseType.ChannelMessageWithSource,
-                    data: {
-                        content: "No posts found!",
-                    },
-                };
+                return interaction.jsonReply("No posts found!");
             } else {
-                return {
-                    type: InteractionResponseType.ChannelMessageWithSource,
-                    data: {
-                        content: `${err}`,
-                    },
-                };
+                return interaction.jsonReply(`Error: ${err}`);
             }
         }
     },

@@ -1,10 +1,9 @@
-import MyContext from "@/types/my_context";
-import { APIInteractionResponse, APIMessageComponentButtonInteraction } from "@discordjs/core/http-only";
+import MessageComponentButtonInteraction from "@/structures/message_component_button_interaction";
+import { APIInteractionJsonResponse } from "@/types";
 export { buttons } from "./_generated_buttons";
 
 type Runner<Output> = (
-    c: MyContext,
-    interaction: APIMessageComponentButtonInteraction,
+    interaction: MessageComponentButtonInteraction,
     args: string[]
 ) => Promise<Output>;
 
@@ -19,7 +18,7 @@ type DeferedButton = BaseButton & {
 };
 
 type ImmediateCommand = BaseButton & {
-    run: Runner<APIInteractionResponse>;
+    run: Runner<APIInteractionJsonResponse>;
     shouldDefer?: false;
 };
 

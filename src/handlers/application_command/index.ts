@@ -1,22 +1,12 @@
 import chatInputApplicationCommandHandler from "@/handlers/application_command/chat_input";
-import MyContext from "@/types/my_context";
-import {
-	APIApplicationCommandInteraction,
-	APIChatInputApplicationCommandInteraction,
-	ApplicationCommandType,
-} from "@discordjs/core/http-only";
+import ApplicationCommandInteraction from "@/structures/command_interaction";
 
 export default async function applicationCommandHandler(
-	c: MyContext,
-	interaction: APIApplicationCommandInteraction
+    interaction: ApplicationCommandInteraction
 ) {
-	switch (interaction.data.type) {
-		case ApplicationCommandType.ChatInput:
-			return await chatInputApplicationCommandHandler(
-				c,
-				interaction as APIChatInputApplicationCommandInteraction
-			);
-		default:
-			return c.json({ error: "Unknown Application Command Type" }, 400);
-	}
+    if (interaction.isChatInput()) {
+        return await chatInputApplicationCommandHandler(interaction);
+    }
+
+    return interaction.badRequest();
 }
