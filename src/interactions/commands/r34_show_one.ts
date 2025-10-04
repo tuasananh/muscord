@@ -1,42 +1,29 @@
-import { Command } from ".";
+import { factory } from "@/utils";
+import { ApplicationCommandOptionType } from "disteractions";
 
-const r34ShowOne: Command<{
-    id?: string;
-    tags?: string;
-    presets?: string;
-}> = {
-    data: (c) =>
-        c
-            .setName("r34_show_one")
-            .setDescription("Uh oh!")
-            .setNSFW(true)
-            .addStringOption((option) =>
-                option
-                    .setName("id")
-                    .setDescription(
-                        "The id of the post, random post if not set"
-                    )
-            )
-            .addStringOption((option) =>
-                option
-                    .setName("tags")
-                    .setDescription(
-                        "The tags to filter posts, seperated by a space"
-                    )
-            )
-            .addStringOption((option) =>
-                option
-                    .setName("presets")
-                    .setDescription(
-                        "List of predefined filters to apply to the tag list, seperated by a space"
-                    )
-                    .addChoices({
-                        name: "basic",
-                        value: "basic",
-                    })
-            ),
-
-    run: async (interaction, inputMap) => {
+export const r34ShowOne = factory.slashCommand({
+    name: "r34_show_one",
+    description: "Uh oh!",
+    nsfw: true,
+    arguments: {
+        id: {
+            type: ApplicationCommandOptionType.String,
+            description: "The id of the post, random post if not set",
+            required: false,
+        },
+        tags: {
+            type: ApplicationCommandOptionType.String,
+            description: "The tags to filter posts, seperated by a space",
+            required: false,
+        },
+        presets: {
+            type: ApplicationCommandOptionType.String,
+            description:
+                "List of predefined filters to apply to the tag list, seperated by a space",
+            required: false,
+        },
+    },
+    runner: async (interaction, inputMap) => {
         const id = inputMap.id;
         const tags = inputMap.tags;
 
@@ -44,7 +31,9 @@ const r34ShowOne: Command<{
             let post;
 
             if (id) {
-                post = await interaction.apis.rule34.fetchPostById(id);
+                post = await interaction.ctx.hono
+                    .get("apis")
+                    .rule34.fetchPostById(id);
             } else if (tags) {
                 const whiteSpaceRegex = /\s+/;
 
@@ -78,10 +67,9 @@ const r34ShowOne: Command<{
 
                 const queryTags = uniqueTagsList.join(" ");
 
-                const posts = await interaction.apis.rule34.fetchPosts(
-                    queryTags,
-                    1
-                );
+                const posts = await interaction.ctx
+                    .get("apis")
+                    .rule34.fetchPosts(queryTags, 1);
                 post = posts.length > 0 ? posts[0] : null;
             } else {
                 return interaction.jsonReply(
@@ -90,7 +78,7 @@ const r34ShowOne: Command<{
             }
 
             return interaction.jsonReply(
-                interaction.apis.rule34.makeSinglePostResponse(post)
+                interaction.ctx.get("apis").rule34.makeSinglePostResponse(post)
             );
         } catch (err) {
             if (
@@ -103,6 +91,4 @@ const r34ShowOne: Command<{
             }
         }
     },
-};
-
-export default r34ShowOne;
+});

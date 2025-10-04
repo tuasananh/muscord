@@ -15,16 +15,16 @@ export function generate(folder: string) {
     for (const f of files) {
         const filenameNoExtension = f.replace(/\.\w+$/, "");
         const camelCased = snakeToCamel(filenameNoExtension);
-        lines.push(`import ${camelCased} from './${filenameNoExtension}';`);
+        lines.push(`import { ${camelCased} } from './${filenameNoExtension}';`);
     }
     lines.push("");
-    lines.push(`export const ${folder} = {`);
+    lines.push(`export const ${folder} = [`);
     for (const f of files) {
         const filenameNoExtension = f.replace(/\.\w+$/, "");
         const camelCased = snakeToCamel(filenameNoExtension);
         lines.push(`  ${camelCased},`);
     }
-    lines.push("};");
+    lines.push("];");
 
     // Check if file exists and content is the same
     const outputPath = folderPath + `/_generated_${folder}.ts`;

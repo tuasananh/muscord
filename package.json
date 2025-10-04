@@ -1,38 +1,39 @@
 {
-	"name": "muscord",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"deploy": "wrangler deploy",
-		"codegen": "ts-node src/scripts/codegen.ts",
-		"build": "pnpm register",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest",
-		"register": "ts-node src/register.ts",
-		"register_alternate": "ts-node src/register_alternate.ts",
-		"cf-typegen": "wrangler types",
-		"ngrok": "ngrok http --domain=fly-suited-awfully.ngrok-free.app 8787"
-	},
-	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.9.7",
-		"@eslint/js": "^9.36.0",
-		"eslint": "^9.36.0",
-		"globals": "^16.4.0",
-		"ngrok": "5.0.0-beta.2",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.9.2",
-		"typescript-eslint": "^8.44.1",
-		"vitest": "^3.2.4",
-		"wrangler": "^4.39.0"
-	},
-	"dependencies": {
-		"@discordjs/builders": "^1.11.3",
-		"@discordjs/core": "^2.2.2",
-		"@discordjs/rest": "^2.6.0",
-		"@google/genai": "^1.21.0",
-		"@types/node": "^24.5.2",
-		"dotenv": "^17.2.2",
-		"hono": "^4.9.8"
-	}
+    "name": "muscord",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "deploy": "wrangler deploy",
+        "codegen": "ts-node src/scripts/codegen.ts",
+        "build": "pnpm register",
+        "dev": "wrangler dev",
+        "start": "wrangler dev",
+        "test": "vitest",
+        "tsc": "tsc --noEmit",
+        "register": "ts-node src/register.ts",
+        "register_alternate": "ts-node src/register_alternate.ts",
+        "cf-typegen": "wrangler types",
+        "ngrok": "ngrok http --domain=fly-suited-awfully.ngrok-free.app 8787"
+    },
+    "devDependencies": {
+        "@cloudflare/vitest-pool-workers": "^0.9.7",
+        "@eslint/js": "^9.36.0",
+        "eslint": "^9.36.0",
+        "globals": "^16.4.0",
+        "ngrok": "5.0.0-beta.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.2",
+        "typescript-eslint": "^8.44.1",
+        "vitest": "^3.2.4",
+        "wrangler": "^4.39.0"
+    },
+    "dependencies": {
+        "@discordjs/builders": "^1.11.3",
+        "@discordjs/rest": "^2.6.0",
+        "@google/genai": "^1.21.0",
+        "@types/node": "^24.5.2",
+        "disteractions": "^0.1.0",
+        "dotenv": "^17.2.2",
+        "hono": "^4.9.8"
+    }
 }

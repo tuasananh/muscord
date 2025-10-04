@@ -1,47 +1,36 @@
-import { Command } from ".";
+import { factory } from "@/utils";
+import { ApplicationCommandOptionType } from "disteractions";
 
-const r34PresetsCommand: Command<{
-    action: number;
-    name?: string;
-}> = {
-    data: (c) =>
-        c
-            .setName("r34_presets")
-            .setDescription("Manipulate tag presets for r34 commands")
-            .addIntegerOption((option) =>
-                // view, add, delete, update
-                option
-                    .setName("action")
-                    .setDescription("The action to do with presets")
-                    .setRequired(true)
-                    .addChoices([
-                        {
-                            name: "search",
-                            value: 0,
-                        },
-                        {
-                            name: "update",
-                            value: 1,
-                        },
-                        {
-                            name: "delete",
-                            value: 2,
-                        },
-                        {
-                            name: "append",
-                            value: 3,
-                        },
-                    ])
-            )
-            .addStringOption((option) =>
-                option
-                    .setName("name")
-                    .setDescription(
-                        "The name of the preset to modify, or the prefix for searching"
-                    )
-            ),
+enum R34PresetAction {
+    Create = 0,
+    Search = 1,
+    Update = 2,
+    Delete = 3,
+}
 
-    run: async (interaction, inputMap) => {
+export const r34Presets = factory.slashCommand({
+    name: "r34_presets",
+    description: "Manipulate tag presets for r34 commands",
+    arguments: {
+        action: {
+            type: ApplicationCommandOptionType.Integer,
+            description: "The action to do with presets",
+            required: true,
+            choices: [
+                { name: "create", value: R34PresetAction.Create },
+                { name: "search", value: R34PresetAction.Search },
+                { name: "update", value: R34PresetAction.Update },
+                { name: "delete", value: R34PresetAction.Delete },
+            ],
+        },
+        name: {
+            type: ApplicationCommandOptionType.String,
+            description:
+                "The name of the preset to modify, or the prefix for searching",
+            required: false,
+        },
+    },
+    runner: async (interaction, inputMap) => {
         const { action, name = "" } = inputMap;
 
         type Preset = {
@@ -50,7 +39,7 @@ const r34PresetsCommand: Command<{
         };
 
         const searchPresetsWithPrefix = async (prefix: string) => {
-            const { results } = (await interaction.sql
+            const { results } = (await interaction.ctx.hono.env.prod_muscord
                 .prepare("SELECT * from r34_presets WHERE name LIKE ? || '%'")
                 .bind(prefix)
                 .run()) as {
@@ -60,7 +49,7 @@ const r34PresetsCommand: Command<{
             return results as Preset[];
         };
 
-        if (action === 0) {
+        if (action === R34PresetAction.Search) {
             // Searching
 
             let presets = await searchPresetsWithPrefix(name);
@@ -89,6 +78,4 @@ const r34PresetsCommand: Command<{
 
         return interaction.jsonReply("This command is not yet implemented");
     },
-};
-
-export default r34PresetsCommand;
+});
