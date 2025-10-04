@@ -1,6 +1,6 @@
-import { factory } from "@/utils";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { ApplicationCommandOptionType, ButtonStyle } from "disteractions";
+import { factory } from "../../utils";
 import { r34ShowOne } from "../buttons/r34_show_one";
 
 export const r34 = factory.slashCommand({

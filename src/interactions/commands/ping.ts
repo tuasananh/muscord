@@ -1,4 +1,4 @@
-import { factory } from "@/utils";
+import { factory } from "../../utils";
 
 export const ping = factory.slashCommand({
     name: "ping",

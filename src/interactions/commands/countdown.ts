@@ -1,5 +1,5 @@
-import { factory } from "@/utils";
 import { ApplicationCommandOptionType } from "disteractions";
+import { factory } from "../../utils";
 
 export const countdown = factory.slashCommand({
     name: "countdown",

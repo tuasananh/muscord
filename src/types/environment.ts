@@ -1,5 +1,5 @@
-import { Rule34Client } from "@/apis";
 import { Env as HonoEnv } from "hono";
+import { Rule34Client } from "../apis";
 
 export interface MuscordEnv extends HonoEnv {
     Bindings: Env;

@@ -1,5 +1,5 @@
-import { factory } from "@/utils";
 import { ButtonStyle } from "disteractions";
+import { factory } from "../../utils";
 
 const R34_SHOW_ONE_BUTTON_ID = 1;
 
