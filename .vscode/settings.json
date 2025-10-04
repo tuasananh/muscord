@@ -1,9 +1,7 @@
 {
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.organizeImports": "always"
-	},
-	"eslint.validate": ["javascript", "typescript"],
-	"javascript.preferences.importModuleSpecifier": "non-relative",
-	"typescript.preferences.importModuleSpecifier": "non-relative"
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+    },
+    "eslint.validate": ["javascript", "typescript"]
 }

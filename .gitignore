@@ -172,3 +172,5 @@ dist
 .wrangler/
 .alternate.vars
 src/register_alternate.ts
+
+.pnpmm-workspace.yaml

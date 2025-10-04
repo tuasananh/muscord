@@ -1,8 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
-import {
-    APIInteractionResponseCallbackData,
-    ButtonStyle,
-} from "@discordjs/core/http-only";
+import { APIInteractionResponseCallbackData, ButtonStyle } from "disteractions";
 
 export type Rule34Post = {
     preview_url: string;
@@ -45,7 +42,8 @@ export class Rule34Client {
             new URLSearchParams({
                 api_key: this.api_key,
                 user_id: this.user_id,
-            });
+            }) +
+            "&";
     }
 
     async fetchPosts(tags: string, limit: number) {
@@ -55,6 +53,7 @@ export class Rule34Client {
                 limit: limit.toString(),
                 tags: tags,
             }).toString();
+        console.log(url);
         const response = await fetch(url);
         const posts = (await response.json()) as Rule34Post[];
         return posts;

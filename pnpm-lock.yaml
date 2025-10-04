@@ -11,9 +11,6 @@ importers:
       '@discordjs/builders':
         specifier: ^1.11.3
         version: 1.11.3
-      '@discordjs/core':
-        specifier: ^2.2.2
-        version: 2.2.2
       '@discordjs/rest':
         specifier: ^2.6.0
         version: 2.6.0
@@ -23,6 +20,9 @@ importers:
       '@types/node':
         specifier: ^24.5.2
         version: 24.5.2
+      disteractions:
+        specifier: ^0.1.0
+        version: 0.1.0
       dotenv:
         specifier: ^17.2.2
         version: 17.2.2
@@ -1116,6 +1116,9 @@ packages:
   discord-api-types@0.38.26:
     resolution: {integrity: sha512-xpmPviHjIJ6dFu1eNwNDIGQ3N6qmPUUYFVAx/YZ64h7ZgPkTcKjnciD8bZe8Vbeji7yS5uYljyciunpq0J5NSw==}
 
+  disteractions@0.1.0:
+    resolution: {integrity: sha512-LlVXyQnNaM9Csdyg3mL+QiVNwc5oBJ+7DEFV+bhdoIny9XzqSjKIPOFZxrRDuwdKFmp6iPgi9kEE1/Ja/T33nA==}
+
   dotenv@17.2.2:
     resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
     engines: {node: '>=12'}
@@ -1318,6 +1321,10 @@ packages:
 
   hono@4.9.8:
     resolution: {integrity: sha512-JW8Bb4RFWD9iOKxg5PbUarBYGM99IcxFl2FPBo2gSJO11jjUDqlP1Bmfyqt8Z/dGhIQ63PMA9LdcLefXyIasyg==}
+    engines: {node: '>=16.9.0'}
+
+  hono@4.9.9:
+    resolution: {integrity: sha512-Hxw4wT6zjJGZJdkJzAx9PyBdf7ZpxaTSA0NfxqjLghwMrLBX8p33hJBzoETRakF3UJu6OdNQBZAlNSkGqKFukw==}
     engines: {node: '>=16.9.0'}
 
   hpagent@0.1.2:
@@ -1719,6 +1726,9 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  tweetnacl@1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -2799,6 +2809,19 @@ snapshots:
 
   discord-api-types@0.38.26: {}
 
+  disteractions@0.1.0:
+    dependencies:
+      '@discordjs/builders': 1.11.3
+      '@discordjs/core': 2.2.2
+      '@discordjs/formatters': 0.6.1
+      '@discordjs/rest': 2.6.0
+      '@sapphire/snowflake': 3.5.5
+      hono: 4.9.9
+      tweetnacl: 1.0.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   dotenv@17.2.2: {}
 
   ecdsa-sig-formatter@1.0.11:
@@ -3088,6 +3111,8 @@ snapshots:
   has-flag@4.0.0: {}
 
   hono@4.9.8: {}
+
+  hono@4.9.9: {}
 
   hpagent@0.1.2:
     optional: true
@@ -3491,6 +3516,8 @@ snapshots:
       yn: 3.1.1
 
   tslib@2.8.1: {}
+
+  tweetnacl@1.0.3: {}
 
   type-check@0.4.0:
     dependencies:

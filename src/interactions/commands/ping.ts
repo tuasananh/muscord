@@ -1,11 +1,10 @@
-import { Command } from ".";
+import { factory } from "@/utils";
 
-const pingCommand: Command = {
-    data: (command) =>
-        command.setName("ping").setDescription("Replies with Pong!"),
-    run: async (interaction) => {
+export const ping = factory.slashCommand({
+    name: "ping",
+    description: "Replies with Pong!",
+    arguments: {},
+    runner: async (interaction) => {
         return interaction.jsonReply("Pong!");
     },
-};
-
-export default pingCommand;
+});
