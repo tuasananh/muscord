@@ -1,7 +1,7 @@
-import { factory } from "@/utils";
 import { REST } from "@discordjs/rest";
 import { ApplicationCommandOptionType, Routes } from "disteractions";
 import { commands } from ".";
+import { factory } from "../../utils";
 
 export const registerCommands = factory.slashCommand({
     name: "register_commands",

@@ -1,13 +1,12 @@
 import { Hono } from "hono";
 
-import { Rule34Client } from "@/apis";
-
 import {
     Button,
     ChatInputApplicationCommand,
     interactionHandler,
     Modal,
 } from "disteractions";
+import { Rule34Client } from "./apis";
 import { buttons } from "./interactions/buttons";
 import { commands } from "./interactions/commands";
 import { modals } from "./interactions/modals";

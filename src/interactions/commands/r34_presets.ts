@@ -1,5 +1,5 @@
-import { factory } from "@/utils";
 import { ApplicationCommandOptionType } from "disteractions";
+import { factory } from "../../utils";
 
 enum R34PresetAction {
     Create = 0,

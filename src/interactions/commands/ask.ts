@@ -1,6 +1,6 @@
-import { factory } from "@/utils";
 import { GoogleGenAI } from "@google/genai";
 import { ApplicationCommandOptionType } from "disteractions";
+import { factory } from "../../utils";
 
 const LLM_PROMPT = `When answering, format your response using **Discord Markdown** rules:
 
