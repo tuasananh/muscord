@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import { snakeToCamel } from "../utils";
+const snakeToCamel = (str: string) =>
+    str.replace(/(_\w)/g, (m) => m[1].toUpperCase());
 
 export function generate(folder: string) {
     const folderPath = `src/interactions/${folder}`;

@@ -26,20 +26,25 @@ export type Rule34Post = {
     comment_count: number;
 };
 
-const RULE34_BASE_URL =
-    "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&";
+const RULE34_BASE_URL = "https://api.rule34.xxx/index.php?";
+const RULE34_BASE_AUTOCOMPLETE_TAGS_URL =
+    "https://api.rule34.xxx/autocomplete.php?";
 
 export class Rule34Client {
     api_key: string;
     user_id: string;
-    base_url: string;
+    base_posts_url: string;
 
     constructor(api_key: string, user_id: string) {
         this.api_key = api_key;
         this.user_id = user_id;
-        this.base_url =
+        this.base_posts_url =
             RULE34_BASE_URL +
             new URLSearchParams({
+                page: "dapi",
+                s: "post",
+                q: "index",
+                json: "1",
                 api_key: this.api_key,
                 user_id: this.user_id,
             }) +
@@ -48,12 +53,11 @@ export class Rule34Client {
 
     async fetchPosts(tags: string, limit: number) {
         const url =
-            this.base_url +
+            this.base_posts_url +
             new URLSearchParams({
                 limit: limit.toString(),
                 tags: tags,
             }).toString();
-        console.log(url);
         const response = await fetch(url);
         const posts = (await response.json()) as Rule34Post[];
         return posts;
@@ -61,13 +65,28 @@ export class Rule34Client {
 
     async fetchPostById(id: string) {
         const url =
-            this.base_url +
+            this.base_posts_url +
             new URLSearchParams({
+                limit: "1",
                 id: id,
             }).toString();
         const response = await fetch(url);
         const posts = (await response.json()) as Rule34Post[];
         return posts.length > 0 ? posts[0] : null;
+    }
+
+    async fetchAutocompleteTags(query: string) {
+        const url =
+            RULE34_BASE_AUTOCOMPLETE_TAGS_URL +
+            new URLSearchParams({
+                q: query,
+            });
+        const response = await fetch(url);
+        const tags = (await response.json()) as {
+            value: string;
+            label: string;
+        }[];
+        return tags;
     }
 
     makeSinglePostResponse = (

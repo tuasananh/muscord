@@ -12,11 +12,48 @@ export const r34 = factory.slashCommand({
             type: ApplicationCommandOptionType.String,
             description: "The tags to filter posts, seperated by a space",
             required: false,
+            autocomplete: true,
+            autocompleteCallback: async (interaction, value) => {
+                // Last word of the current value
+                const words = value.split(/\s+/);
+                const last_word = words.at(-1) ?? "";
+                if (words.length) words.pop();
+                const prefix = words.join(" ");
+                const tags = await interaction.ctx
+                    .get("apis")
+                    .rule34.fetchAutocompleteTags(last_word);
+                return tags.map((tag) => ({
+                    name: prefix + (prefix.length ? " " : "") + tag.value,
+                    value: prefix + (prefix.length ? " " : "") + tag.value,
+                }));
+            },
         },
         limit: {
             type: ApplicationCommandOptionType.Integer,
             description: "The maximum number of posts to fetch, defaults to 15",
             required: false,
+            choices: [
+                {
+                    name: "Five",
+                    value: 5,
+                },
+                {
+                    name: "Ten",
+                    value: 10,
+                },
+                {
+                    name: "Fifteen",
+                    value: 15,
+                },
+                {
+                    name: "Twenty",
+                    value: 20,
+                },
+                {
+                    name: "Thirty",
+                    value: 30,
+                },
+            ],
         },
         presets: {
             type: ApplicationCommandOptionType.String,
@@ -113,7 +150,6 @@ export const r34 = factory.slashCommand({
                         content,
                         components: [row.toJSON(), sendOne.toJSON()],
                     });
-                    await new Promise((f) => setTimeout(f, 500));
                 }
             } catch (err) {
                 if (
