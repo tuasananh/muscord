@@ -47,7 +47,7 @@ export class Rule34Client {
                 json: "1",
                 api_key: this.api_key,
                 user_id: this.user_id,
-            }) +
+            }).toString() +
             "&";
     }
 
@@ -59,7 +59,7 @@ export class Rule34Client {
                 tags: tags,
             }).toString();
         const response = await fetch(url);
-        const posts = (await response.json()) as Rule34Post[];
+        const posts: Rule34Post[] = await response.json();
         return posts;
     }
 
@@ -71,7 +71,7 @@ export class Rule34Client {
                 id: id,
             }).toString();
         const response = await fetch(url);
-        const posts = (await response.json()) as Rule34Post[];
+        const posts: Rule34Post[] = await response.json();
         return posts.length > 0 ? posts[0] : null;
     }
 
@@ -80,12 +80,12 @@ export class Rule34Client {
             RULE34_BASE_AUTOCOMPLETE_TAGS_URL +
             new URLSearchParams({
                 q: query,
-            });
+            }).toString();
         const response = await fetch(url);
-        const tags = (await response.json()) as {
+        const tags: {
             value: string;
             label: string;
-        }[];
+        }[] = await response.json();
         return tags;
     }
 

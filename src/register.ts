@@ -14,10 +14,10 @@ async function registerCommands(guildId: string = "") {
     const token = process.env.DISCORD_TOKEN;
     const applicationId = process.env.DISCORD_APPLICATION_ID;
 
-    if (!token) {
+    if (token === undefined) {
         throw new Error("The DISCORD_TOKEN environment variable is required.");
     }
-    if (!applicationId) {
+    if (applicationId === undefined) {
         throw new Error(
             "The DISCORD_APPLICATION_ID environment variable is required."
         );
@@ -48,4 +48,10 @@ async function registerCommands(guildId: string = "") {
     }
 }
 
-registerCommands(process.env.DISCORD_GUILD_ID);
+registerCommands(process.env.DISCORD_GUILD_ID)
+    .then(() => {
+        console.log("Done");
+    })
+    .catch((e) => {
+        console.error(e);
+    });

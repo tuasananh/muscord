@@ -32,28 +32,14 @@ export const r34 = factory.slashCommand({
             type: ApplicationCommandOptionType.Integer,
             description: "The maximum number of posts to fetch, defaults to 15",
             required: false,
-            choices: [
-                {
-                    name: "Five",
-                    value: 5,
-                },
-                {
-                    name: "Ten",
-                    value: 10,
-                },
-                {
-                    name: "Fifteen",
-                    value: 15,
-                },
-                {
-                    name: "Twenty",
-                    value: 20,
-                },
-                {
-                    name: "Thirty",
-                    value: 30,
-                },
-            ],
+            choices: Array.from({ length: 6 }, (e, i) => (i + 1) * 5).map(
+                (v) => {
+                    return {
+                        name: v.toString(),
+                        value: v,
+                    };
+                }
+            ),
         },
         presets: {
             type: ApplicationCommandOptionType.String,
@@ -158,7 +144,7 @@ export const r34 = factory.slashCommand({
                 ) {
                     await interaction.followUp("No posts found!");
                 } else {
-                    await interaction.followUp(`${err}`);
+                    await interaction.followUp(`${String(err)}`);
                 }
             }
         },

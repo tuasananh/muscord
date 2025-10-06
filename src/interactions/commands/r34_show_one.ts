@@ -30,11 +30,11 @@ export const r34ShowOne = factory.slashCommand({
         try {
             let post;
 
-            if (id) {
+            if (id !== undefined) {
                 post = await interaction.ctx.hono
                     .get("apis")
                     .rule34.fetchPostById(id);
-            } else if (tags) {
+            } else if (tags !== undefined) {
                 const whiteSpaceRegex = /\s+/;
 
                 const inputTagsList = Array.from(
@@ -87,7 +87,7 @@ export const r34ShowOne = factory.slashCommand({
             ) {
                 return interaction.jsonReply("No posts found!");
             } else {
-                return interaction.jsonReply(`Error: ${err}`);
+                return interaction.jsonReply(`Error: ${String(err)}`);
             }
         }
     },

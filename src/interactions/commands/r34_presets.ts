@@ -1,5 +1,9 @@
-import { ApplicationCommandOptionType } from "disteractions";
+import {
+    ApplicationCommandOptionType,
+    InteractionResponseType,
+} from "disteractions";
 import { factory } from "../../utils";
+import { r34PresetsCreate } from "../modals/r34_presets_create";
 
 enum R34PresetAction {
     Create = 0,
@@ -32,6 +36,7 @@ export const r34Presets = factory.slashCommand({
     },
     runner: async (interaction, inputMap) => {
         const { action, name = "" } = inputMap;
+        const actionAsEnum = action as R34PresetAction;
 
         type Preset = {
             name: string;
@@ -49,9 +54,7 @@ export const r34Presets = factory.slashCommand({
             return results as Preset[];
         };
 
-        if (action === R34PresetAction.Search) {
-            // Searching
-
+        if (actionAsEnum === R34PresetAction.Search) {
             let presets = await searchPresetsWithPrefix(name);
 
             if (presets.length > 10) {
@@ -74,6 +77,18 @@ export const r34Presets = factory.slashCommand({
             }
 
             return interaction.jsonReply(content);
+        } else if (actionAsEnum == R34PresetAction.Create) {
+            const data = r34PresetsCreate.toAPI({
+                component: {
+                    name: name,
+                    content: "",
+                },
+            });
+            return interaction.ctx.hono.json({
+                type: InteractionResponseType.Modal,
+                data,
+            });
+            // return interaction.jsonShowModal(data);
         }
 
         return interaction.jsonReply("This command is not yet implemented");
