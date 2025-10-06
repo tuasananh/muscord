@@ -26,7 +26,7 @@ export const r34ShowOne = factory.reactiveButton({
             ) {
                 return interaction.jsonReply("No posts found!");
             } else {
-                return interaction.jsonReply(`${err}`);
+                return interaction.jsonReply(`${String(err)}`);
             }
         }
     },

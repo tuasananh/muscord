@@ -48,7 +48,7 @@ export const registerCommands = factory.slashCommand({
                 // And of course, make sure you catch and log any errors!
                 await interaction.followUp(
                     `There was an error while reloading application (/) commands: \`\`\`
-                        ${error}
+                        ${String(error)}
                         \`\`\``
                 );
             }

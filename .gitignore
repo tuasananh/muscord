@@ -173,4 +173,4 @@ dist
 .alternate.vars
 src/register_alternate.ts
 
-.pnpmm-workspace.yaml
+pnpm-workspace.yaml

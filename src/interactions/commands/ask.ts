@@ -51,7 +51,7 @@ export const ask = factory.slashCommand({
                 });
                 const LENGTH_LIMIT = 2000;
 
-                const response_text = response.text || "";
+                const response_text = response.text ?? "";
 
                 const splitted_response = [];
                 for (let i = 0; i < response_text.length; i += LENGTH_LIMIT) {
