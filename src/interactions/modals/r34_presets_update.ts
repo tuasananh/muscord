@@ -33,7 +33,7 @@ export const r34PresetsUpdate = factory.modal({
             placeholder:
                 "The content of the preset, including multiple tags with syntax from rule34",
             required: true,
-            maxLength: 1000,
+            maxLength: 4000,
         },
     },
 

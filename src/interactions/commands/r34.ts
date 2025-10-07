@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 import { ApplicationCommandOptionType, ButtonStyle } from "disteractions";
-import { factory } from "../../utils";
+import { commaSeparatedQuestionMarks, factory } from "../../utils";
 import { r34ShowOne } from "../buttons/r34_show_one";
 
 export const r34 = factory.slashCommand({
@@ -51,49 +51,41 @@ export const r34 = factory.slashCommand({
     runner: {
         shouldDefer: true,
         callback: async (interaction, inputMap) => {
-            let { tags, limit } = inputMap;
+            const { tags = "", limit = 15 } = inputMap;
 
-            tags = tags ?? "";
-            limit = limit ?? 15;
+            const inputTags = tags.trim();
 
-            const inputTagsList = Array.from(new Set(tags.split(/\s+/)));
+            const presets = (inputMap.presets ?? "").split(/\s+/);
 
-            const tagsList = new Set();
+            const selectString = `SELECT content FROM r34_presets WHERE name IN (${commaSeparatedQuestionMarks(
+                presets.length
+            )})`;
 
-            // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // const filters: any =
-            // 	(await c.env.KV_STORE.get("filters", "json")) || {};
+            const { results } = (await interaction.ctx.env.prod_muscord
+                .prepare(selectString)
+                .bind(...presets)
+                .run()) as {
+                results: { content: string }[];
+            };
 
-            // for (const appliedFilter of filter.split(whiteSpaceRegex)) {
-            // 	const toAppend = filters[appliedFilter];
-            // 	if (toAppend) {
-            // 		for (const item of toAppend.split(whiteSpaceRegex)) {
-            // 			tagsList.push(item);
-            // 		}
-            // 	}
-            // }
+            const queryTags = (
+                inputTags +
+                " " +
+                results.map((r) => r.content).join(" ")
+            ).trim();
 
-            for (const item of inputTagsList) {
-                tagsList.add(item);
-            }
-
-            const queryTags = Array.from(tagsList).join(" ");
-
-            const inputTagsText = inputTagsList.join(" ").length
-                ? inputTagsList.join(" ")
-                : "None";
-
-            await interaction.followUp(
-                `input tags: \`${inputTagsText}\`\nraw tags:\`${
+            await interaction.followUp({
+                content: `input tags: \`${
+                    inputTags.length ? inputTags : "None"
+                }\`\nraw tags:\`${
                     queryTags.length ? queryTags : "None"
-                }\`\ntimes: \`${limit}\``
-            );
+                }\`\ntimes: \`${limit}\``,
+            });
 
             try {
                 const data = await interaction.ctx
                     .get("apis")
                     .rule34.fetchPosts(queryTags, limit);
-                console.log(data.length);
                 const NUMBER_OF_POSTS_PER_MESSAGE = 5;
                 for (let i = 0; i < data.length; ) {
                     let cnt = NUMBER_OF_POSTS_PER_MESSAGE;
@@ -113,7 +105,6 @@ export const r34 = factory.slashCommand({
                                 .setStyle(ButtonStyle.Link)
                         );
 
-                        console.log(i, data[i]["id"]);
                         sendOne.addComponents(
                             new ButtonBuilder(
                                 r34ShowOne.toAPI({

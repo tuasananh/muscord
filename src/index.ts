@@ -22,14 +22,6 @@ app.use(async (c, next) => {
     await next();
 });
 
-app.get("/", async (c) => {
-    const { results } = await c.env.prod_muscord
-        .prepare("SELECT * from r34_presets WHERE name LIKE ? || '%'")
-        .bind("")
-        .run();
-    return c.json({ presets: results });
-});
-
 app.post("/", async (c) => {
     return await interactionHandler({
         hono: c,

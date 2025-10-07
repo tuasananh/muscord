@@ -10,7 +10,6 @@ export const r34ShowOne = factory.reactiveButton({
     },
     runner: async (interaction, data) => {
         const id = data;
-        console.log("Fetching post by ID:", id);
         try {
             const post = await interaction.ctx
                 .get("apis")
