@@ -28,7 +28,7 @@ export const r34PresetsCreate = factory.modal({
             placeholder:
                 "Multiple tags with search syntax from rule34 seperated by spaces, e.g. 'cute solo score:>=50'",
             required: true,
-            maxLength: 1000,
+            maxLength: 4000,
         },
     },
 
