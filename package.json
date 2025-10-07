@@ -32,7 +32,7 @@
         "@discordjs/rest": "^2.6.0",
         "@google/genai": "^1.21.0",
         "@types/node": "^24.5.2",
-        "disteractions": "0.3.0",
+        "disteractions": "0.6.0",
         "dotenv": "^17.2.2",
         "hono": "^4.9.8"
     }
