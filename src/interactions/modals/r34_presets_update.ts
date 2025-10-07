@@ -1,16 +1,21 @@
 import { ComponentType, TextInputStyle } from "disteractions";
 import { factory } from "../../utils";
 
-const R34_PRESETS_CREATE_MODAL_ID = 1;
-export const r34PresetsCreate = factory.modal({
-    id: R34_PRESETS_CREATE_MODAL_ID,
+const R34_PRESETS_UPDATE_MODAL_ID = 3;
+export const r34PresetsUpdate = factory.modal({
+    id: R34_PRESETS_UPDATE_MODAL_ID,
     title: "Create a new preset",
     fields: {
+        tips: {
+            type: ComponentType.TextDisplay,
+            content:
+                "**TIPS:** You can prefill the content by using the `/r34_presets` command with the `name` option filled.",
+        },
         name: {
             type: ComponentType.TextInput,
             label: "Preset Name",
             style: TextInputStyle.Short,
-            placeholder: "Alphanumeric with underscores and hyphens",
+            placeholder: "The name of the preset to update",
             required: true,
             maxLength: 100,
         },
@@ -26,7 +31,7 @@ export const r34PresetsCreate = factory.modal({
             label: "Preset Content",
             style: TextInputStyle.Paragraph,
             placeholder:
-                "Multiple tags with search syntax from rule34 seperated by spaces, e.g. 'cute solo score:>=50'",
+                "The content of the preset, including multiple tags with syntax from rule34",
             required: true,
             maxLength: 1000,
         },
@@ -38,7 +43,6 @@ export const r34PresetsCreate = factory.modal({
             try {
                 const name = inputMap.name.trim();
                 const content = inputMap.content.trim();
-                const description = inputMap.description.trim();
 
                 const NAME_REGEX = /^[A-Za-z0-9_-]{1,100}$/;
                 if (!NAME_REGEX.test(name)) {
@@ -53,25 +57,22 @@ export const r34PresetsCreate = factory.modal({
                     throw new Error("User ID not found");
                 }
 
-                await interaction.ctx.hono.env.prod_muscord
+                const { results } = await interaction.ctx.hono.env.prod_muscord
                     .prepare(
-                        "INSERT INTO r34_presets (name, description, content, discord_user_id) VALUES (?, ?, ?, ?)"
+                        "UPDATE r34_presets SET content = ? WHERE name = ? AND discord_user_id = ? RETURNING *"
                     )
-                    .bind(name, description, content, userId)
+                    .bind(content, name, userId)
                     .run();
-                await interaction.followUp(`Preset \`${name}\` created!`);
+
+                if (results.length == 0) {
+                    throw new Error(
+                        `Cannot find your preset with the name \`${name}\`.`
+                    );
+                }
+                await interaction.followUp(`Preset \`${name}\` updated!`);
             } catch (err) {
                 if (err instanceof Error) {
-                    if (
-                        err.message.includes("UNIQUE constraint failed") &&
-                        err.message.includes("r34_presets.name")
-                    ) {
-                        await interaction.followUp(
-                            `A preset with that name already exists! Please choose a different name.`
-                        );
-                    } else {
-                        await interaction.followUp(`${err.message}`);
-                    }
+                    await interaction.followUp(`${err.message}`);
                 } else {
                     console.log("Unknown error", err);
                     await interaction.followUp(`Error: ${String(err)}`);
