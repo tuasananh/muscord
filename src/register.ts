@@ -48,7 +48,20 @@ async function registerCommands(guildId: string = "") {
     }
 }
 
-registerCommands(process.env.DISCORD_GUILD_ID)
+// get a flag from terminal to decide whether to register globally or to a guild
+const discordGuildId = process.env.DISCORD_GUILD_ID;
+
+if (discordGuildId === undefined) {
+    throw new Error(
+        "The DISCORD_GUILD_ID environment variable is required to register guild commands."
+    );
+}
+
+const args = process.argv.slice(2);
+const isGlobal = args.includes("--global") || args.includes("-g");
+const guildId = isGlobal ? "" : process.env.DISCORD_GUILD_ID;
+
+registerCommands(guildId)
     .then(() => {
         console.log("Done");
     })
