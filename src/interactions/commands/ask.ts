@@ -64,7 +64,12 @@ export const ask = factory.slashCommand({
                     await interaction.followUp(r);
                 }
             } catch (e) {
-                await interaction.followUp(`Error: ${(e as Error).message}`);
+                if (e instanceof Error) {
+                    await interaction.followUp(`${e.message}`);
+                } else {
+                    console.log("Unknown error", e);
+                    await interaction.followUp(`Error: ${String(e)}`);
+                }
             }
         },
     },
