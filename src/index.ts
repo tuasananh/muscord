@@ -2,7 +2,7 @@ import { Hono } from "hono";
 
 import {
     Button,
-    ChatInputApplicationCommand,
+    ChatInputCommand,
     interactionHandler,
     Modal,
 } from "disteractions";
@@ -28,9 +28,8 @@ app.post("/", async (c) => {
         discordToken: c.env.DISCORD_TOKEN,
         discordPublicKey: c.env.DISCORD_PUBLIC_KEY,
         ownerId: c.env.DISCORD_APPLICATION_OWNER_ID,
-        commands:
-            commands as unknown[] as ChatInputApplicationCommand<MuscordEnv>[],
-        buttons: buttons as unknown[] as Button<MuscordEnv>[],
+        commands: commands as ChatInputCommand<MuscordEnv>[],
+        buttons: buttons as Button<MuscordEnv>[],
         modals: modals as unknown[] as Modal<MuscordEnv>[],
     });
 });
