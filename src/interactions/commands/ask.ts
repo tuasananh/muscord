@@ -44,24 +44,30 @@ export const ask = factory.slashCommand({
                 apiKey: interaction.ctx.hono.env.GEMINI_API_KEY,
             });
 
+            const ONE_MESSAGE_LENGTH = 2000;
+
             try {
-                const response = await ai.models.generateContent({
+                const response = await ai.models.generateContentStream({
                     model: "gemini-2.5-flash",
                     contents: LLM_PROMPT + question,
                 });
-                const LENGTH_LIMIT = 2000;
 
-                const response_text = response.text ?? "";
+                let current_response = "";
 
-                const splitted_response = [];
-                for (let i = 0; i < response_text.length; i += LENGTH_LIMIT) {
-                    splitted_response.push(
-                        response_text.slice(i, i + LENGTH_LIMIT)
-                    );
+                for await (const chunk of response) {
+                    if (chunk.text !== undefined) {
+                        if (
+                            current_response.length + chunk.text.length >=
+                            ONE_MESSAGE_LENGTH
+                        ) {
+                            await interaction.followUp(current_response);
+                            current_response = "";
+                        }
+                        current_response += chunk.text;
+                    }
                 }
-
-                for (const r of splitted_response) {
-                    await interaction.followUp(r);
+                if (current_response.length > 0) {
+                    await interaction.followUp(current_response);
                 }
             } catch (e) {
                 if (e instanceof Error) {
