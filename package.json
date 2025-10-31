@@ -34,6 +34,6 @@
         "@types/node": "^24.5.2",
         "disteractions": "0.7.1",
         "dotenv": "^17.2.2",
-        "hono": "^4.9.8"
+        "hono": "^4.10.3"
     }
 }
