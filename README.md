@@ -1,191 +1,208 @@
 # Muscord
 
-A Discord bot built with TypeScript and Cloudflare Workers, featuring various utility commands and interactive features.
+A Discord bot built with TypeScript and deployed on Cloudflare Workers. Muscord
+handles slash commands, interactive buttons, and modals, with integrations for
+AI-powered responses (via Gemini) and Rule34 content search.
 
 ## Features
 
--   **Ping Command**: Basic connectivity test
--   **Dictionary Command**: Word definition lookup
--   **Timer Command**: Countdown functionality
--   **Rule34 Integration**: Content filtering and display commands
--   **Interactive Modals**: Custom forms and user input handling
--   **Button Components**: Interactive message components
+- **`/ask`** — Ask a question and get a streamed AI response powered by Gemini
+  2.5 Flash, formatted in Discord Markdown
+- **`/ping`** — Basic connectivity test; replies with "Pong!"
+- **`/countdown`** — Starts a live countdown timer for a given number of seconds
+- **`/r34`** — Search Rule34 posts by tags with autocomplete, with optional tag
+  presets and configurable result limits (NSFW-only channels)
+- **`/r34_presets`** — Create, search, update, and delete saved tag preset
+  groups for use with `/r34`
+- **`/r34_show_one`** — Display a single Rule34 post by ID
+- **Interactive buttons** — Inline "show one" buttons on `/r34` results for
+  fetching individual post details
 
 ## Tech Stack
 
--   **Runtime**: [Cloudflare Workers](https://workers.cloudflare.com/)
--   **Framework**: [Hono](https://hono.dev/) - Fast web framework for edge computing
--   **Discord API**: [@discordjs/core](https://github.com/discordjs/discord.js) and [@discordjs/rest](https://github.com/discordjs/discord.js)
--   **Language**: TypeScript
--   **Package Manager**: pnpm
--   **Testing**: Vitest with Cloudflare Workers pool
+| Layer                | Technology                                                                                                                                                                              |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Runtime              | [Cloudflare Workers](https://workers.cloudflare.com/)                                                                                                                                   |
+| Web framework        | [Hono](https://hono.dev/)                                                                                                                                                               |
+| Discord interactions | [disteractions](https://github.com/tuasananh/disteractions), [@discordjs/builders](https://github.com/discordjs/discord.js), [@discordjs/rest](https://github.com/discordjs/discord.js) |
+| AI                   | [Google Gemini](https://ai.google.dev/) via `@google/genai`                                                                                                                             |
+| Database             | Cloudflare D1 (SQLite)                                                                                                                                                                  |
+| KV storage           | Cloudflare KV                                                                                                                                                                           |
+| Language             | TypeScript                                                                                                                                                                              |
+| Package manager      | pnpm                                                                                                                                                                                    |
+| Testing              | Vitest with `@cloudflare/vitest-pool-workers`                                                                                                                                           |
+| Linting / formatting | ESLint + Prettier                                                                                                                                                                       |
 
-## Commands
+## Project Structure
 
-| Command            | Description                   | Options                                     |
-| ------------------ | ----------------------------- | ------------------------------------------- |
-| `/ping`            | Responds with "Pong!"         | None                                        |
-| `/dict <word>`     | Finds definitions of a word   | `word` - The word to define                 |
-| `/timer <seconds>` | Countdown timer               | `seconds` - Number of seconds to count down |
-| `/r34-filters`     | Manage rule34 content filters | `action` - Action to perform                |
-| `/r34`             | Rule34 content search         | Various search parameters                   |
-| `/r34-show-one`    | Display single rule34 result  | Search parameters                           |
+```plaintext
+src/
+├── index.ts                        # Hono app entry point; wires up middleware and interaction handler
+├── register.ts                     # CLI script to register slash commands with Discord
+├── apis/
+│   └── rule34/                     # Rule34Client: fetch posts, autocomplete tags, format responses
+├── interactions/
+│   ├── commands/                   # Slash command definitions (ask, countdown, ping, r34, r34_presets, r34_show_one, register_commands)
+│   ├── buttons/                    # Button interaction handlers (r34_show_one button)
+│   └── modals/                     # Modal handlers for r34_presets create/update/delete
+├── scripts/
+│   ├── codegen.ts                  # Entry point for the codegen script
+│   └── generator.ts                # Auto-generates index barrels for commands, buttons, and modals
+├── types/
+│   └── environment.ts              # MuscordEnv interface (Hono env with Cloudflare bindings + typed variables)
+└── utils/
+    └── index.ts                    # Shared DisteractionsFactory instance and helpers
+
+migrations/
+└── 0001_create_r34_presets_table.sql   # D1 migration: r34_presets table
+
+test/
+└── index.spec.ts                   # Vitest integration test (Cloudflare Workers pool)
+```
 
 ## Setup
 
 ### Prerequisites
 
--   Node.js 18+
--   pnpm
--   Cloudflare account
--   Discord application
+- Node.js 25+
+- pnpm 11+
+- A [Cloudflare account](https://dash.cloudflare.com/) with Workers, D1, and KV
+  access
+- A [Discord application](https://discord.com/developers/applications) with a
+  bot user
+- A [Google AI Studio](https://aistudio.google.com/) API key (for `/ask`)
+- A Rule34 API key and user ID (for `/r34` commands)
 
 ### Installation
-
-1. Clone the repository:
 
 ```bash
 git clone https://github.com/tuasananh/muscord.git
 cd muscord
-```
-
-2. Install dependencies:
-
-```bash
 pnpm install
 ```
 
-3. Set up environment variables:
+### Environment Variables
+
+Copy the example env file and fill in your values:
 
 ```bash
-# Copy example environment file
 cp example.dev.vars .dev.vars
 ```
 
-4. Configure your `.dev.vars` file with:
-
-```
-DISCORD_TOKEN=your_bot_token_here
-DISCORD_APPLICATION_ID=your_application_id_here
-DISCORD_APPLICATION_OWNER_ID=your_user_id_here
-```
+| Variable                       | Description                                               | Required             |
+| ------------------------------ | --------------------------------------------------------- | -------------------- |
+| `DISCORD_APPLICATION_ID`       | Discord application ID                                    | Yes                  |
+| `DISCORD_APPLICATION_OWNER_ID` | Owner's Discord user ID (for admin commands)              | Yes                  |
+| `DISCORD_PUBLIC_KEY`           | Discord application public key (for request verification) | Yes                  |
+| `DISCORD_TOKEN`                | Discord bot token                                         | Yes                  |
+| `DISCORD_GUILD_ID`             | Guild ID for registering guild-scoped commands            | Yes (for `register`) |
+| `RULE34_API_KEY`               | Rule34 API key                                            | Yes                  |
+| `RULE34_USER_ID`               | Rule34 user ID                                            | Yes                  |
+| `GEMINI_API_KEY`               | Google Gemini API key                                     | Yes                  |
 
 ### Discord Application Setup
 
-1. Create a Discord application at [Discord Developer Portal](https://discord.com/developers/applications)
-2. Create a bot user and copy the token
-3. Enable necessary intents (Message Content Intent if needed)
-4. Generate OAuth2 URL with `applications.commands` scope
+1. Go to the
+   [Discord Developer Portal](https://discord.com/developers/applications) and
+   create an application.
+2. Under **Bot**, create a bot user and copy the token.
+3. Under **OAuth2**, generate an invite URL with the `applications.commands`
+   scope and invite the bot to your server.
+4. Copy the **Public Key** and **Application ID** from the General Information
+   page.
 
-### Development
+### Database Setup
 
-Start the development server:
+Run the D1 migration to create the `r34_presets` table:
+
+```bash
+wrangler d1 migrations apply prod-muscord
+```
+
+## Development
+
+Start the local development server (runs Prettier, ESLint, then `wrangler dev`):
 
 ```bash
 pnpm dev
-# or
-pnpm start
 ```
 
-The bot will be available at `http://localhost:8787`
-
-### Deployment
-
-Deploy to Cloudflare Workers:
+The bot will be available at `http://localhost:8787`. Use ngrok (or any tunnel)
+to expose it to Discord:
 
 ```bash
-pnpm deploy
-```
-
-## Configuration
-
-### Wrangler Configuration
-
-The bot is configured via `wrangler.toml`:
-
--   **Runtime**: Cloudflare Workers with Node.js compatibility
--   **Entry Point**: `src/index.ts`
--   **Environment Variables**: Defined in `[vars]` section
-
-### Environment Variables
-
-| Variable                       | Description                      | Required |
-| ------------------------------ | -------------------------------- | -------- |
-| `DISCORD_TOKEN`                | Discord bot token                | Yes      |
-| `DISCORD_APPLICATION_ID`       | Discord application ID           | Yes      |
-| `DISCORD_APPLICATION_OWNER_ID` | Owner user ID for admin commands | Yes      |
-
-## Development Commands
-
-```bash
-# Start development server
-pnpm dev
-
-# Deploy to production
-pnpm deploy
-
-# Generate TypeScript types from Wrangler
-pnpm cf-typegen
-
-# Run tests
-pnpm test
-
-# Register Discord commands
-pnpm register
-
-# Start ngrok tunnel (for development)
 pnpm ngrok
 ```
 
-## Project Structure
+Then set the tunnel URL as the **Interactions Endpoint URL** in your Discord
+application settings.
 
-```
-src/
-├── api.ts                 # Discord API client setup
-├── index.ts              # Main Hono application
-├── register.ts           # Command registration utility
-├── commands/             # Slash command implementations
-├── handlers/             # Interaction handlers
-├── middlewares/          # Request middleware (Discord verification)
-├── modals/              # Modal interaction handlers
-├── buttons/             # Button interaction handlers
-├── types/               # TypeScript type definitions
-└── utils/               # Utility functions
+## Registering Commands
+
+Register commands to a specific guild (faster for development):
+
+```bash
+pnpm register
 ```
 
-## Architecture
+Register commands globally (takes up to an hour to propagate):
 
-The bot uses a modular architecture:
+```bash
+pnpm register -- --global
+```
 
-1. **Hono Framework**: Handles HTTP requests and routing
-2. **Interaction Handlers**: Process different Discord interaction types
-3. **Command System**: Modular slash command implementation
-4. **Middleware**: Discord request verification and API setup
-5. **Type Safety**: Full TypeScript support with Discord API types
+## Available Scripts
 
-## Contributing
+| Script                    | Description                                                    |
+| ------------------------- | -------------------------------------------------------------- |
+| `pnpm dev` / `pnpm start` | Format, lint, and start the local Wrangler dev server          |
+| `pnpm deploy`             | Deploy to Cloudflare Workers                                   |
+| `pnpm register`           | Register slash commands with Discord (guild-scoped by default) |
+| `pnpm codegen`            | Auto-generate index barrels for commands, buttons, and modals  |
+| `pnpm build`              | Runs `pnpm register` (used in CI)                              |
+| `pnpm test`               | Run the Vitest test suite                                      |
+| `pnpm lint`               | Run ESLint across all files                                    |
+| `pnpm format`             | Format all files with Prettier                                 |
+| `pnpm format:check`       | Check formatting without writing                               |
+| `pnpm cf-typegen`         | Generate TypeScript types from Wrangler bindings               |
+| `pnpm ngrok`              | Open an ngrok tunnel on port 8787                              |
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Commit your changes: `git commit -am 'Add feature'`
-5. Push to the branch: `git push origin feature-name`
-6. Submit a pull request
+## Codegen
+
+Commands, buttons, and modals are auto-discovered at build time. When you add a
+new file to `src/interactions/commands/`, `src/interactions/buttons/`, or
+`src/interactions/modals/`, run:
+
+```bash
+pnpm codegen
+```
+
+This regenerates the `_generated_*.ts` barrel files. CI will fail if these files
+are out of date.
+
+## CI
+
+GitHub Actions runs on every push and pull request to `main`. The pipeline:
+
+1. Installs dependencies (with pnpm cache)
+2. Checks formatting with Prettier
+3. Runs ESLint
+4. Type-checks with `tsc --noEmit`
+5. Runs codegen and verifies no uncommitted changes
+6. Builds the project
+
+Dependency updates are managed automatically via Dependabot (npm weekly, GitHub
+Actions monthly).
 
 ## Testing
 
-Run the test suite:
+Tests run inside a Cloudflare Workers runtime pool via
+`@cloudflare/vitest-pool-workers`, so they reflect the actual edge environment.
 
 ```bash
 pnpm test
 ```
 
-Tests are written using Vitest with Cloudflare Workers pool for realistic edge runtime testing.
-
 ## License
 
-This project is private and not licensed for public use.
-
-## Acknowledgments
-
-This project was made possible with Cloudflare Workers and the Discord.js ecosystem.
+Private — not licensed for public use.
