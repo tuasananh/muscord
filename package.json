@@ -1,40 +1,49 @@
 {
-    "name": "muscord",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "deploy": "wrangler deploy",
-        "codegen": "ts-node src/scripts/codegen.ts",
-        "build": "pnpm register",
-        "dev": "wrangler dev",
-        "start": "wrangler dev",
-        "test": "vitest",
-        "tsc": "tsc --noEmit",
-        "register": "ts-node src/register.ts",
-        "register_alternate": "ts-node src/register_alternate.ts",
-        "cf-typegen": "wrangler types",
-        "ngrok": "ngrok http --domain=fly-suited-awfully.ngrok-free.app 8787"
-    },
-    "devDependencies": {
-        "@cloudflare/vitest-pool-workers": "^0.9.14",
-        "@eslint/js": "^9.39.4",
-        "eslint": "^9.39.4",
-        "globals": "^16.5.0",
-        "ngrok": "5.0.0-beta.2",
-        "ts-node": "^10.9.2",
-        "typescript": "^6.0.3",
-        "typescript-eslint": "^8.58.1",
-        "vitest": "^3.2.4",
-        "wrangler": "^4.81.1"
-    },
-    "dependencies": {
-        "@discordjs/builders": "^1.14.1",
-        "@discordjs/rest": "^2.6.1",
-        "@google/genai": "^1.49.0",
-        "@types/node": "^24.12.2",
-        "disteractions": "0.7.1",
-        "dotenv": "^17.4.2",
-        "hono": "^4.12.12"
-    },
-    "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+  "name": "muscord",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "codegen": "tsx src/scripts/codegen.ts",
+    "build": "pnpm register",
+    "dev": "pnpm format --log-level silent && pnpm lint && wrangler dev",
+    "start": "pnpm format --log-level silent && pnpm lint && wrangler dev",
+    "test": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "tsc": "tsc --noEmit",
+    "register": "tsx src/register.ts",
+    "register_alternate": "tsx src/register_alternate.ts",
+    "cf-typegen": "wrangler types && prettier --write ./worker-configuration.d.ts && eslint ./worker-configuration.d.ts --fix",
+    "ngrok": "ngrok http --domain=fly-suited-awfully.ngrok-free.app 8787"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.15.2",
+    "@eslint/css": "^1.2.0",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^1.2.0",
+    "@eslint/markdown": "^8.0.1",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0",
+    "jiti": "^2.6.1",
+    "ngrok": "5.0.0-beta.2",
+    "prettier": "3.8.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1",
+    "vitest": "^4.1.5",
+    "wrangler": "^4.87.0"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^1.14.1",
+    "@discordjs/rest": "^2.6.1",
+    "@google/genai": "^1.51.0",
+    "disteractions": "0.7.1",
+    "dotenv": "^17.4.2",
+    "hono": "^4.12.16"
+  },
+  "packageManager": "pnpm@11.0.3+sha512.10448f2988933787c6699aef683174c741f6472ad91b7e3c8fe3e2bda57be8a0f7caf58949b8bc22e624578b3dc6e57876ba4c631928a1b84cc141e12c79bccd"
 }
