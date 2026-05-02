@@ -173,7 +173,4 @@ dist
 .alternate.vars
 src/register_alternate.ts
 
-pnpm-workspace.yaml
-
-
 .vscode/
