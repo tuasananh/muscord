@@ -1,1 +1,1 @@
-export * from "./_generated_modals";
+export * from './_generated_modals';

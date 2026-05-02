@@ -1,2 +1,2 @@
 // export * from "./discord";
-export * from "./rule34";
+export * from './rule34';

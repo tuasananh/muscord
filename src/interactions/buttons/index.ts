@@ -1,1 +1,1 @@
-export { buttons } from "./_generated_buttons";
+export { buttons } from './_generated_buttons';

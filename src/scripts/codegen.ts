@@ -1,5 +1,13 @@
-import { generate } from "./generator";
+import { generate } from './generator.js';
 
-generate("commands");
-generate("buttons");
-generate("modals");
+async function main() {
+  await generate('commands');
+  await generate('buttons');
+  await generate('modals');
+}
+
+main()
+  .then(() => console.log('Codegen finished!'))
+  .catch((reason) => {
+    console.log(reason);
+  });

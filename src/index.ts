@@ -1,37 +1,37 @@
-import { Hono } from "hono";
+import { Hono } from 'hono';
 
 import {
-    Button,
-    ChatInputCommand,
-    interactionHandler,
-    Modal,
-} from "disteractions";
-import { Rule34Client } from "./apis";
-import { buttons } from "./interactions/buttons";
-import { commands } from "./interactions/commands";
-import { modals } from "./interactions/modals";
-import { MuscordEnv } from "./types";
+  Button,
+  ChatInputCommand,
+  interactionHandler,
+  Modal,
+} from 'disteractions';
+import { Rule34Client } from './apis';
+import { buttons } from './interactions/buttons';
+import { commands } from './interactions/commands';
+import { modals } from './interactions/modals';
+import { MuscordEnv } from './types';
 
 const app = new Hono<MuscordEnv>();
 
 app.use(async (c, next) => {
-    const apis = {
-        rule34: new Rule34Client(c.env.RULE34_API_KEY, c.env.RULE34_USER_ID),
-    };
-    c.set("apis", apis);
-    await next();
+  const apis = {
+    rule34: new Rule34Client(c.env.RULE34_API_KEY, c.env.RULE34_USER_ID),
+  };
+  c.set('apis', apis);
+  await next();
 });
 
-app.post("/", async (c) => {
-    return await interactionHandler({
-        hono: c,
-        discordToken: c.env.DISCORD_TOKEN,
-        discordPublicKey: c.env.DISCORD_PUBLIC_KEY,
-        ownerId: c.env.DISCORD_APPLICATION_OWNER_ID,
-        commands: commands as ChatInputCommand<MuscordEnv>[],
-        buttons: buttons as Button<MuscordEnv>[],
-        modals: modals as unknown[] as Modal<MuscordEnv>[],
-    });
+app.post('/', async (c) => {
+  return await interactionHandler({
+    hono: c,
+    discordToken: c.env.DISCORD_TOKEN,
+    discordPublicKey: c.env.DISCORD_PUBLIC_KEY,
+    ownerId: c.env.DISCORD_APPLICATION_OWNER_ID,
+    commands: commands as ChatInputCommand<MuscordEnv>[],
+    buttons: buttons as Button<MuscordEnv>[],
+    modals: modals as unknown[] as Modal<MuscordEnv>[],
+  });
 });
 
 export default app;
