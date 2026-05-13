@@ -20,7 +20,7 @@
     "ngrok": "ngrok http --domain=fly-suited-awfully.ngrok-free.app 8787"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.16.0",
+    "@cloudflare/vitest-pool-workers": "^0.16.4",
     "@eslint/css": "^1.2.0",
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^1.2.0",
