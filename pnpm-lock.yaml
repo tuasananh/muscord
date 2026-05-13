@@ -24,8 +24,8 @@ importers:
         specifier: ^17.4.2
         version: 17.4.2
       hono:
-        specifier: ^4.12.16
-        version: 4.12.16
+        specifier: ^4.12.18
+        version: 4.12.18
     devDependencies:
       '@cloudflare/vitest-pool-workers':
         specifier: ^0.16.0
@@ -1398,8 +1398,8 @@ packages:
     resolution: {integrity: sha512-6tfZ91bOr7bOXnK7PRDCGBLa1H4U080YHNaAQ2KsMGlLEzRbk44nsZF2E1IeRc3vtJHPVbKCYgdFbaGO2ljd8g==}
     engines: {node: '>=10.19.0'}
 
-  hono@4.12.16:
-    resolution: {integrity: sha512-jN0ZewiNAWSe5khM3EyCmBb250+b40wWbwNILNfEvq84VREWwOIkuUsFONk/3i3nqkz7Oe1PcpM2mwQEK2L9Kg==}
+  hono@4.12.18:
+    resolution: {integrity: sha512-RWzP96k/yv0PQfyXnWjs6zot20TqfpfsNXhOnev8d1InAxubW93L11/oNUc3tQqn2G0bSdAOBpX+2uDFHV7kdQ==}
     engines: {node: '>=16.9.0'}
 
   hpagent@0.1.2:
@@ -2972,7 +2972,7 @@ snapshots:
       '@discordjs/formatters': 0.6.2
       '@discordjs/rest': 2.6.1
       '@sapphire/snowflake': 3.5.5
-      hono: 4.12.16
+      hono: 4.12.18
       tweetnacl: 1.0.3
     transitivePeerDependencies:
       - bufferutil
@@ -3245,7 +3245,7 @@ snapshots:
       p-cancelable: 2.1.1
       responselike: 2.0.1
 
-  hono@4.12.16: {}
+  hono@4.12.18: {}
 
   hpagent@0.1.2:
     optional: true
